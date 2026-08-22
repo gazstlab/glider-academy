@@ -1,0 +1,50 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  # Never in parallel: two runs would compute the same suffix for the day and
+  # the second would fail creating a tag that already exists.
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: publish
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      # No semver: Glider is not a published package and nobody depends on an
+      # API of it. Numbering by compatibility would invent a contract that does
+      # not exist. The date answers the question people actually ask — "what was
+      # live on the day the learner saw that?".
+      - name: Compute the tag
+        id: tag
+        run: |
+          today=$(date -u +%Y.%m.%d)
+          n=$(git tag -l "$today-*" | wc -l | tr -d ' ')
+          tag="$today-$((n + 1))"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "$tag"
+
+      - name: Publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.tag.outputs.tag }}
+        run: |
+          git tag "$TAG"
+          git push origin "$TAG"
+          gh release create "$TAG" \
+            --title "$TAG" \
+            --generate-notes \
+            --latest
