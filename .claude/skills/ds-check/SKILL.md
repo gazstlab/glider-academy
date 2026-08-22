@@ -1,34 +1,37 @@
 ---
 name: ds-check
-description: Roda o piso mecânico do design system do Glider — os quatro checks do DESIGN-SYSTEM.md §8 (hex fora de tokens, box-shadow fora dos tokens, border-radius acima de 8px, azul de marca usado como estado) e a paridade tokens.css/tokens.json do §12. Use antes de encerrar qualquer tarefa que tenha tocado em UI, CSS ou tokens.
+description: Runs Glider's design system mechanical floor — the four DESIGN-SYSTEM.md §8 checks (hex outside tokens, box-shadow outside the tokens, border-radius above 8px, brand blue used as a state) plus the tokens.css/tokens.json parity of §12. Use before closing any task that touched UI, CSS or tokens.
 allowed-tools: Bash(${CLAUDE_SKILL_DIR}/ds-check.sh:*)
 ---
 
-Rode:
+Run:
 
 ```bash
 ${CLAUDE_SKILL_DIR}/ds-check.sh
 ```
 
-Ele varre todos os arquivos de fonte versionados e devolve as linhas ofensoras.
-Corrija tudo o que aparecer antes de dizer que a tarefa acabou. Não silencie um
-achado adicionando exceção no script: se a regra precisa mesmo ser contrariada,
-o caminho é `/decision`, que registra a exceção em `DECISIONS.md`.
+It sweeps every tracked source file and returns the offending lines. Fix
+everything it reports before saying the task is done. Do not silence a finding
+by adding an exception to the script: if a rule genuinely has to be broken, the
+route is `/decision`, which records the exception in `DECISIONS.md`.
 
-## O que este check NÃO cobre
+The same script runs in CI, in the `contract` job, where it blocks the merge.
+Running it here only saves you the round trip.
 
-O script é o piso mecânico. O piso do §10 é humano e continua sendo seu:
+## What this check does NOT cover
 
-- responsivo até 360px
-- navegação completa por teclado, com foco visível
-- `prefers-reduced-motion` respeitado
-- contraste 4.5:1 em texto, 3:1 em glifos e bordas informativas
-- estado nunca comunicado só por cor
-- tema claro e escuro verificados na mesma tela
-- grid legível em simulação de deuteranopia e protanopia
-- sem CLS: grid e canvas reservam altura antes de montar
+The script is the mechanical floor. The §10 floor is human and stays yours:
 
-E há regras do §8 que nenhum regex pega — componente novo que não entrou no
-documento antes do código (regra 12), estado inventado que não existe em
-`airflow.utils.state` (regra 7), emoji, gradiente. Para uma leitura de contrato
-em contexto limpo, use o agente `ds-reviewer`.
+- responsive down to 360px
+- full keyboard navigation, with visible focus
+- `prefers-reduced-motion` respected
+- contrast 4.5:1 for text, 3:1 for glyphs and informative borders
+- state never carried by colour alone
+- light and dark themes checked on the same screen
+- grid readable under deuteranopia and protanopia simulation
+- no CLS: grid and canvas reserve height before mounting
+
+And there are §8 rules no regex catches — a new component that did not enter
+the document before the code (rule 12), an invented state that does not exist in
+`airflow.utils.state` (rule 7), emoji, gradients. For a contract read in a clean
+context, use the `ds-reviewer` agent. The same agent reviews every PR.
