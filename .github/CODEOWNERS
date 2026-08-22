@@ -1,0 +1,22 @@
+# Default owner for everything.
+* @gabrielrosalino
+
+# The paths below already have an owner, but they are listed for another
+# reason: a mandatory review notification works as an alarm. A silent change
+# here is a change to the contract the rest of the repository treats as stable.
+
+# Single source of truth for every value. One token changes the whole product.
+/docs/design-system/tokens.css   @gabrielrosalino
+/docs/design-system/tokens.json  @gabrielrosalino
+
+# The narrative contract and the record of exceptions.
+/docs/design-system/             @gabrielrosalino
+/CLAUDE.md                       @gabrielrosalino
+
+# Harness: hooks, skills and agents enforce the contract. Whoever edits the
+# enforcer can disable the contract without touching a single rule.
+/.claude/                        @gabrielrosalino
+
+# The pipeline reviews itself. A PR that loosens the gate goes through the
+# loosened gate.
+/.github/workflows/              @gabrielrosalino

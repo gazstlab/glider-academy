@@ -1,0 +1,26 @@
+# Content licence
+
+Glider's code is under the MIT licence, in `LICENSE`.
+
+The **teaching content** — lesson copy, exercises, illustrations and the design
+system under `docs/` — is under Creative Commons Attribution-ShareAlike 4.0
+International (CC BY-SA 4.0).
+
+    https://creativecommons.org/licenses/by-sa/4.0/
+
+In short: you may copy, adapt and use it commercially, as long as you credit
+Glider (glider.academy) and distribute the derivative under the same licence.
+
+## Why two licences
+
+The code is meant to be reused without ceremony, and MIT is the lowest possible
+friction. The content is the product, and CC BY-SA keeps an adaptation open
+instead of letting it become somebody else's closed material.
+
+## What neither licence covers
+
+Trademarks. Apache Airflow is a registered trademark of the Apache Software
+Foundation, and Glider is not affiliated with the ASF. The task state colours
+inherited from `airflow.utils.state` come from an Apache-2.0 project and that
+use is legitimate; reproducing brand identity is a different matter. See
+`docs/design-system/DESIGN-SYSTEM.md` §11.
