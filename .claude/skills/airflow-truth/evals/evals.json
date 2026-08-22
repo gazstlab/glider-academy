@@ -3,23 +3,23 @@
   "evals": [
     {
       "id": 0,
-      "name": "trigger-rules-completas",
+      "name": "complete-trigger-rules",
       "prompt": "to escrevendo a lição 07 do Glider, sobre trigger rules. me lista todas as trigger rules que existem no Airflow 3 e explica em uma linha o que cada uma faz. isso vai virar tabela na lição então precisa estar completo",
-      "expected_output": "Lista completa e correta das trigger rules de 3.x, incluindo as que a memória costuma omitir (ALL_DONE_SETUP_SUCCESS, ALL_DONE_MIN_ONE_SUCCESS, ONE_DONE, NONE_SKIPPED). Deve ter consultado apache/airflow numa tag fixa.",
+      "expected_output": "A complete, correct list of the 3.x trigger rules, including the ones memory tends to omit (ALL_DONE_SETUP_SUCCESS, ALL_DONE_MIN_ONE_SUCCESS, ONE_DONE, NONE_SKIPPED). Must have queried apache/airflow at a pinned tag, and must say which version the count holds from — the answer differs between 3.0 and 3.1+.",
       "files": []
     },
     {
       "id": 1,
-      "name": "core-ou-provider",
+      "name": "core-or-provider",
       "prompt": "no lab de Celery eu preciso montar o docker-compose. o CeleryExecutor vem no core do Airflow 3 ou é provider separado? e o KubernetesExecutor? preciso acertar isso senão a lição ensina errado",
-      "expected_output": "Ambos são providers no Airflow 3 (apache-airflow-providers-celery e apache-airflow-providers-cncf-kubernetes), não core. Deve ter verificado no repositório em vez de afirmar de memória.",
+      "expected_output": "Both are providers in Airflow 3 (apache-airflow-providers-celery and apache-airflow-providers-cncf-kubernetes), not core. Must have verified against the repository rather than asserting from memory. A complete answer also notes that the short alias stays in core via CORE_EXECUTOR_NAMES and executor_loader, so AIRFLOW__CORE__EXECUTOR=CeleryExecutor remains correct — concluding that the dotted provider path is now required is the opposite error.",
       "files": []
     },
     {
       "id": 2,
-      "name": "onde-mora-o-timetable",
+      "name": "where-the-timetable-lives",
       "prompt": "quero vendorizar a lógica de cron e data interval do Airflow pro shim do Glider, em vez de reimplementar. em que arquivos exatamente ela mora no Airflow 3?",
-      "expected_output": "task-sdk/src/airflow/sdk/definitions/timetables/ (_cron.py, _delta.py, interval.py, simple.py, events.py). NÃO airflow/timetables/, que é o caminho do 2.x. Deve ter verificado.",
+      "expected_output": "The algorithm lives in airflow-core/src/airflow/timetables/ (base.py, _cron.py, interval.py, simple.py, events.py), NOT in task-sdk. Both trees carry the same class names, which is the trap: the task-sdk copy is the declarative surface a DAG author writes (_cron.py ~2KB, no base.py), while core holds the implementation (_cron.py ~8KB, and class DataInterval is defined in exactly one file in the repository: airflow-core/src/airflow/timetables/base.py). Anything vendoring next-run computation wants the core tree. Must have verified, and must not have concluded the logic 'moved to the task-sdk' from the class names.",
       "files": []
     }
   ]

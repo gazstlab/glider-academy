@@ -4,7 +4,7 @@
 #        Vitest · Playwright
 # =============================================================
 
-# ---------- Dependências ----------
+# ---------- Dependencies ----------
 node_modules/
 .pnpm-store/
 .yarn/
@@ -15,12 +15,12 @@ build/
 .vite/
 *.tsbuildinfo
 
-# Runtime do Pyodide baixado no build. Grande e reproduzível.
-# NÃO ignorar *.whl: se o shim Python for vendorizado como wheel
-# fixado, ele precisa estar versionado.
+# Pyodide runtime, downloaded at build time. Large and reproducible.
+# Do NOT ignore *.whl: if the Python shim is vendored as a pinned
+# wheel, it has to be version-controlled.
 public/pyodide/
 
-# ---------- Testes ----------
+# ---------- Tests ----------
 coverage/
 playwright-report/
 test-results/
@@ -38,8 +38,8 @@ venv/
 .pytest_cache/
 .mypy_cache/
 
-# ---------- Ambiente ----------
-# .env.example é versionado de propósito.
+# ---------- Environment ----------
+# .env.example is version-controlled on purpose.
 .env
 .env.*
 !.env.example
@@ -49,11 +49,11 @@ venv/
 .wrangler/
 
 # ---------- Claude Code ----------
-# settings.json é o contrato do time e VAI para o repositório.
-# settings.local.json é preferência de máquina e não vai.
+# settings.json is the team contract and DOES go into the repository.
+# settings.local.json is a per-machine preference and does not.
 .claude/settings.local.json
 
-# ---------- Editor e SO ----------
+# ---------- Editor and OS ----------
 .DS_Store
 .AppleDouble
 .idea/

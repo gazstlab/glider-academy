@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# tokens.css é a fonte única de verdade de todo valor do design system.
-# Mudar um token muda o produto inteiro — é decisão humana, sempre.
-# Roda em PreToolUse (Edit|Write) e escala para o usuário.
+# tokens.css is the single source of truth for every design system value.
+# Changing a token changes the whole product — that is always a human decision.
+# Runs on PreToolUse (Edit|Write) and escalates to the user.
 set -uo pipefail
 
 payload=$(cat)
@@ -14,7 +14,7 @@ case "$file" in
         hookEventName: "PreToolUse",
         permissionDecision: "escalate",
         permissionDecisionReason:
-          "tokens.css é a fonte única de verdade do design system. Mudança de token precisa de aprovação humana e de uma linha em DECISIONS.md (/decision)."
+          "tokens.css is the single source of truth for the design system. A token change needs human approval and a line in DECISIONS.md (/decision)."
       }
     }'
     ;;

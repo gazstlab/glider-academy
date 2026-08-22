@@ -1,158 +1,168 @@
 ---
 name: airflow-truth
-description: Confere uma afirmação sobre o comportamento do Apache Airflow contra o código-fonte real antes de ela virar lição, componente ou código do Glider. Use sempre que estiver prestes a dizer como o Airflow se comporta — estados, trigger rules, data lógica e cron, precedência de configuração, ciclo de vida de executor, scheduler, triggerer, o que é core e o que é provider, ou onde um símbolo mora. Use inclusive quando tiver certeza: a certeza é o sintoma, não a garantia.
-when_to_use: Antes de escrever qualquer afirmação sobre semântica do Airflow em lição, componente, código ou resposta. Também ao revisar conteúdo de lição, e quando alguém perguntar "o Airflow faz X?".
+description: Checks a claim about Apache Airflow's behaviour against the real source code before it becomes a Glider lesson, component or line of code. Use whenever you are about to state how Airflow behaves — states, trigger rules, logical date and cron, configuration precedence, executor lifecycle, scheduler, triggerer, what is core and what is a provider, or where a symbol lives. Use it even when you are certain: the certainty is the symptom, not the guarantee.
+when_to_use: Before writing any claim about Airflow semantics in a lesson, component, code or answer. Also when reviewing lesson content, and whenever someone asks "does Airflow do X?".
 allowed-tools: Bash(gh api:*)
 ---
 
-# Não afirme comportamento do Airflow de memória
+# Never state Airflow behaviour from memory
 
-O Glider ensina. `DECISIONS.md` D18 é explícito: ensinar errado é o pior defeito possível
-neste produto. Uma afirmação plausível e falsa é pior que uma lacuna, porque o aluno leva
-o erro para a produção dele.
+Glider teaches. `DECISIONS.md` D18 is explicit: teaching something false is the
+worst defect this product can have, because the learner carries the error into
+their own production. A plausible false claim is worse than a gap.
 
-Três armadilhas, todas encontradas de verdade ao escrever e testar esta skill. As três
-foram cometidas por um modelo confiante — inclusive o que escreveu este arquivo.
+Three traps, all of them hit for real while writing and testing this skill. All
+three were made by a confident model — including the one that wrote this file.
 
-## Armadilha 1 · "Airflow 3" não é uma resposta
+## Trap 1 · "Airflow 3" is not an answer
 
-`TriggerRule` mudou de casa **dentro** da linha 3.x, e o conteúdo mudou junto:
+`TriggerRule` changed homes **inside** the 3.x line, and its contents changed
+with it:
 
-| Tag | Caminho | Regras |
+| Tag | Path | Rules |
 |---|---|---|
 | `3.0.0` | `airflow-core/src/airflow/utils/trigger_rule.py` | 12 |
-| `3.1.0`+ | `airflow-core/src/airflow/task/trigger_rule.py` | 13 (entra `ALL_DONE_MIN_ONE_SUCCESS`) |
+| `3.1.0`+ | `airflow-core/src/airflow/task/trigger_rule.py` | 13 (`ALL_DONE_MIN_ONE_SUCCESS` enters) |
 
-Quem responde "no Airflow 3 são 13 trigger rules" acerta a partir de 3.1 e erra no 3.0.
-**Fixe a minor, não a major**, e diga na lição a partir de qual versão o fato vale.
+Anyone answering "Airflow 3 has 13 trigger rules" is right from 3.1 onward and
+wrong on 3.0. **Pin the minor, not the major**, and say in the lesson which
+version the fact holds from.
 
-## Armadilha 2 · Arquivo mudou de lugar ≠ import quebrou
+## Trap 2 · A file moved ≠ the import broke
 
-Dois casos que parecem idênticos e se comportam ao contrário:
+Two cases that look identical and behave in opposite ways:
 
-| Import antigo | Arquivo antigo existe? | Resolve em 3.3.1? | Por quê |
+| Old import | Old file still exists? | Resolves in 3.3.1? | Why |
 |---|---|---|---|
-| `from airflow.utils.trigger_rule import TriggerRule` | não | **sim**, com `DeprecationWarning` | `airflow/utils/__init__.py` mapeia `"trigger_rule": {"*": "airflow.task.trigger_rule"}` via `add_deprecated_classes` |
-| `from airflow.executors.celery_executor import CeleryExecutor` | não | **não**, `ImportError` | `airflow/executors/__init__.py` não tem shim |
+| `from airflow.utils.trigger_rule import TriggerRule` | no | **yes**, with a `DeprecationWarning` | `airflow/utils/__init__.py` maps `"trigger_rule": {"*": "airflow.task.trigger_rule"}` via `add_deprecated_classes` |
+| `from airflow.executors.celery_executor import CeleryExecutor` | no | **no**, `ImportError` | `airflow/executors/__init__.py` has no shim |
 
-Não dá para inferir um do outro. A resposta mora no `__init__.py` do pacote, caso a caso.
-Ensinar o caminho depreciado forma gente que escreve código com warning; ensinar que ele
-quebrou forma gente que migra com urgência sem motivo. Os dois erram, de formas diferentes.
+You cannot infer one from the other. The answer lives in the package's
+`__init__.py`, case by case. Teaching the deprecated path produces people who
+write code that warns; teaching that it broke produces people who migrate
+urgently for no reason. Both are wrong, in different directions.
 
-## Armadilha 3 · No Airflow 3 o mesmo conceito existe duas vezes, e uma delas é oca
+## Trap 3 · In Airflow 3 the same concept exists twice, and one copy is hollow
 
-A mais traiçoeira, e a que mais importa para o Glider. O Airflow 3 separou autoria (Task
-SDK) de execução (core). Timetables existem **nas duas árvores, com os mesmos nomes de
-classe** — e é fácil concluir que "mudaram para o task-sdk". Mudou a superfície; o
-algoritmo não saiu do lugar.
+The most treacherous one, and the one that matters most to Glider. Airflow 3
+split authoring (Task SDK) from execution (core). Timetables exist **in both
+trees, with the same class names** — and it is easy to conclude they "moved to
+the task-sdk". The surface moved; the algorithm did not.
 
 | | `task-sdk/.../definitions/timetables/` | `airflow-core/src/airflow/timetables/` |
 |---|---|---|
-| Papel | superfície declarativa que o autor de DAG escreve | o algoritmo |
-| `_cron.py` | ~2 KB: `CronMixin` com `expression`, `timezone`, `validate()`, presets | ~8 KB: `_get_next`/`_get_prev`, `_align_to_next`/`_align_to_prev`, DST |
-| `base.py` | **não existe** | `DataInterval`, `TimeRestriction`, `DagRunInfo`, `next_dagrun_info` |
-| Corpo das classes | `class CronDataIntervalTimetable(CronMixin, BaseTimetable): ...` | implementação real |
+| Role | the declarative surface a DAG author writes | the algorithm |
+| `_cron.py` | ~2 KB: `CronMixin` with `expression`, `timezone`, `validate()`, presets | ~8 KB: `_get_next`/`_get_prev`, `_align_to_next`/`_align_to_prev`, DST |
+| `base.py` | **does not exist** | `DataInterval`, `TimeRestriction`, `DagRunInfo`, `next_dagrun_info` |
+| Class bodies | `class CronDataIntervalTimetable(CronMixin, BaseTimetable): ...` | the real implementation |
 
-`BaseTimetable` do SDK tem só `validate()` e atributos — nenhum `next_dagrun_info`. E
-`class DataInterval` é definida em **um único arquivo do repositório inteiro**:
-`airflow-core/src/airflow/timetables/base.py`.
+The SDK's `BaseTimetable` has only `validate()` and attributes — no
+`next_dagrun_info`. And `class DataInterval` is defined in **exactly one file in
+the whole repository**: `airflow-core/src/airflow/timetables/base.py`.
 
-Consequência prática, e é o oposto do que a intuição sugere: **qualquer coisa que precise
-calcular quando o próximo run acontece quer a árvore do core**, mesmo que esteja
-interpretando o DAG do aluno. A árvore do SDK só serve para espelhar a API que o aluno
-importa e escreve.
+The practical consequence, and it is the opposite of what intuition suggests:
+**anything that needs to compute when the next run happens wants the core
+tree**, even when it is interpreting the learner's DAG. The SDK tree only exists
+to mirror the API the learner imports and writes.
 
-A lição geral: quando achar que um conceito "mudou de pacote" no Airflow 3, verifique se
-ele não existe nos dois — e, se existir, **qual dos dois tem o código**. Tamanho de arquivo
-e presença de `base.py` entregam rápido.
+The general lesson: when you think a concept "moved packages" in Airflow 3,
+check whether it does not exist in both — and, if it does, **which of the two
+holds the code**. File size and the presence of `base.py` give it away fast.
 
-## Alvo
+## Target
 
-**Airflow 3.x.** As tags do repositório são o número nu, sem `v`. Para descobrir a estável
-atual em vez de confiar num número escrito aqui:
+**Airflow 3.x.** The repository's tags are the bare number, with no `v`. To find
+the current stable instead of trusting a number written here:
 
 ```bash
 gh api "repos/apache/airflow/releases?per_page=30" \
   --jq '[.[]|select(.prerelease==false)|.tag_name|select(test("^3\\."))][0]'
 ```
 
-## Como conferir, barato
+## How to check, cheaply
 
-`gh` está autenticado e pré-aprovado nesta skill. Peça o arquivo **cru** e filtre, em vez de
-despejar o arquivo inteiro no contexto:
+`gh` is authenticated and pre-approved in this skill. Ask for the **raw** file
+and filter, instead of dumping the whole file into context:
 
 ```bash
-gh api "repos/apache/airflow/contents/<caminho>?ref=<tag>" \
-  -H "Accept: application/vnd.github.raw" | rg '<padrão>'
+gh api "repos/apache/airflow/contents/<path>?ref=<tag>" \
+  -H "Accept: application/vnd.github.raw" | rg '<pattern>'
 ```
 
-O `Accept: application/vnd.github.raw` evita o base64 da API de conteúdo. Exemplo — quais
-trigger rules existem de fato:
+The `Accept: application/vnd.github.raw` header avoids the contents API's
+base64. Example — which trigger rules actually exist:
 
 ```bash
 gh api "repos/apache/airflow/contents/airflow-core/src/airflow/task/trigger_rule.py?ref=3.3.1" \
   -H "Accept: application/vnd.github.raw" | rg '^\s+[A-Z_]+ = '
 ```
 
-Treze linhas em vez de um arquivo. Verificar tem de ser barato, senão você pula — e pular é
-o que esta skill existe para impedir.
+Thirteen lines instead of a file. Verifying has to be cheap, otherwise you skip
+it — and skipping is what this skill exists to prevent.
 
-Quando o caminho não for óbvio, ou para checar se o símbolo existe em mais de um lugar:
+When the path is not obvious, or to check whether a symbol lives in more than
+one place:
 
 ```bash
-gh api "search/code?q=filename:<arquivo>+repo:apache/airflow" --jq '.items[].path'
+gh api "search/code?q=filename:<file>+repo:apache/airflow" --jq '.items[].path'
 ```
 
-**Cuidado com o shell:** em zsh, `path` é ligado a `$PATH`. Um laço com `for path in ...`
-destrói o `PATH` e todos os comandos passam a falhar em silêncio, o que parece "o arquivo
-não existe". Use outro nome de variável.
+**Shell warning:** in zsh, `path` is tied to `$PATH`. A loop using
+`for path in ...` destroys `PATH` and every command starts failing silently,
+which looks like "the file does not exist". Use another variable name.
 
-## Onde as coisas moram (verificado em 3.3.1)
+## Where things live (verified at 3.3.1)
 
-| Assunto | Caminho |
+| Subject | Path |
 |---|---|
-| Estados de task e de DAG run | `airflow-core/src/airflow/utils/state.py` |
-| Trigger rules | `airflow-core/src/airflow/task/trigger_rule.py` (3.1+; ver Armadilha 1) |
-| Semântica de trigger rule | `airflow-core/src/airflow/ti_deps/deps/trigger_rule_dep.py` — é quem decide de fato |
-| Timetables, cron, data interval | **os dois lados**, ver Armadilha 3 |
-| DAG, TaskGroup, params, XCom (autoria) | `task-sdk/src/airflow/sdk/definitions/` |
-| Defaults de configuração | `airflow-core/src/airflow/config_templates/config.yml` |
+| Task and DAG run states | `airflow-core/src/airflow/utils/state.py` |
+| Trigger rules | `airflow-core/src/airflow/task/trigger_rule.py` (3.1+; see Trap 1) |
+| Trigger rule semantics | `airflow-core/src/airflow/ti_deps/deps/trigger_rule_dep.py` — this is what actually decides |
+| Timetables, cron, data interval | **both sides**, see Trap 3 |
+| DAG, TaskGroup, params, XCom (authoring) | `task-sdk/src/airflow/sdk/definitions/` |
+| Configuration defaults | `airflow-core/src/airflow/config_templates/config.yml` |
 | Scheduler, triggerer, dag-processor | `airflow-core/src/airflow/jobs/` |
-| LocalExecutor e base | `airflow-core/src/airflow/executors/` |
+| LocalExecutor and base | `airflow-core/src/airflow/executors/` |
 | CeleryExecutor | `providers/celery/src/airflow/providers/celery/executors/` |
 | KubernetesExecutor, KubernetesPodOperator | `providers/cncf/kubernetes/src/airflow/providers/cncf/kubernetes/` |
 
-Celery e Kubernetes **não** estão no core — são providers. Mas o **alias** continua no core:
-`executor_constants.py` lista `CORE_EXECUTOR_NAMES` e `executor_loader.py` mapeia o nome curto
-para o módulo do provider. Então `AIRFLOW__CORE__EXECUTOR: CeleryExecutor` continua certo, e
-concluir "virou provider, logo preciso do caminho pontilhado" é errar para o outro lado.
-Resumo que cabe numa lição: **código no provider, nome no core.**
+Celery and Kubernetes are **not** in core — they are providers. But the **alias**
+stays in core: `executor_constants.py` lists `CORE_EXECUTOR_NAMES` and
+`executor_loader.py` maps the short name to the provider module. So
+`AIRFLOW__CORE__EXECUTOR: CeleryExecutor` is still correct, and concluding "it
+became a provider, therefore I need the dotted path" is being wrong in the other
+direction. The summary that fits in a lesson: **code in the provider, name in
+the core.**
 
-Se um caminho der 404, ele mudou entre versões. Ache com `search/code` e **corrija esta
-tabela**: skill que mente sobre onde a verdade mora é pior que skill nenhuma.
+If a path 404s, it moved between versions. Find it with `search/code` and **fix
+this table**: a skill that lies about where the truth lives is worse than no
+skill at all.
 
-Para comportamento documentado em vez de implementado:
-`https://airflow.apache.org/docs/apache-airflow/<versão>/`, sempre com a versão na URL.
+For behaviour that is documented rather than implemented:
+`https://airflow.apache.org/docs/apache-airflow/<version>/`, always with the
+version in the URL.
 
-## O que NÃO é fonte de verdade
+## What is NOT a source of truth
 
-- **Sua memória.** É o motivo desta skill existir.
-- **As skills `data-engineering:*` deste ambiente.** Operam um Airflow real, de alguém. São
-  ferramenta de operação, não especificação do que o Glider ensina.
-- Blog, tutorial, StackOverflow. Apontam o caminho; não fecham a questão.
-- Documentação sem versão na URL. E note que a doc oficial do próprio Airflow ainda usa
-  `airflow.utils.trigger_rule` em `faq.rst` — nem o exemplo oficial é árbitro.
+- **Your memory.** It is the reason this skill exists.
+- **The `data-engineering:*` skills in this environment.** They operate somebody's
+  real Airflow. They are an operations tool, not a specification of what Glider
+  teaches.
+- Blogs, tutorials, StackOverflow. They point the way; they do not settle it.
+- Documentation without a version in the URL. And note that Airflow's own docs
+  still use `airflow.utils.trigger_rule` in `faq.rst` — not even the official
+  example is an arbiter.
 
-## Ao escrever
+## When writing
 
-Registre contra o que conferiu, ao lado da afirmação:
+Record what you checked against, next to the claim:
 
 ```
-# verificado: airflow-core/src/airflow/task/trigger_rule.py @ 3.3.1
+# verified: airflow-core/src/airflow/task/trigger_rule.py @ 3.3.1
 ```
 
-Não é burocracia: é o que permite re-verificar em bloco quando o Glider subir de versão-alvo,
-em vez de reler tudo.
+This is not paperwork: it is what makes it possible to re-verify in bulk when
+Glider moves its target version, instead of re-reading everything.
 
-Se não deu para verificar, **diga isso no texto** em vez de afirmar. Uma lacuna honesta é
-recuperável; uma afirmação falsa com cara de certeza, não.
+If you could not verify it, **say so in the text** instead of asserting it. An
+honest gap is recoverable; a false claim wearing the face of certainty is not.

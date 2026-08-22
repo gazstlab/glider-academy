@@ -1,30 +1,30 @@
 /* =============================================================
-   Glider Design System — tokens (v2, alinhado ao Apache Airflow)
+   Glider Design System — tokens (v2, aligned with Apache Airflow)
    glider.academy
 
-   FONTE ÚNICA DE VERDADE. Nenhum hex, px de espaçamento ou
-   duração deve existir fora deste arquivo.
+   SINGLE SOURCE OF TRUTH. No hex, no spacing px and no duration
+   may exist outside this file.
 
-   Linhagem: azul de marca do Airflow (#017CEE), estrutura de
-   tokens espelhando a UI do Airflow 3 (Chakra: brand/gray),
-   e as cores de estado herdadas de airflow.utils.state.
+   Lineage: Airflow's brand blue (#017CEE), a token structure
+   mirroring the Airflow 3 UI (Chakra: brand/gray), and the state
+   colours inherited from airflow.utils.state.
    ============================================================= */
 
 :root {
-  /* ---------- Rampa de marca (âncora: Airflow #017CEE) ------- */
+  /* ---------- Brand ramp (anchor: Airflow #017CEE) ----------- */
   --gl-brand-50:  #E8F3FE;
   --gl-brand-100: #C7E2FD;
   --gl-brand-200: #92C8FB;
   --gl-brand-300: #4FA6F5;
   --gl-brand-400: #1A8CF1;
-  --gl-brand-500: #017CEE;  /* cor de marca do Apache Airflow */
+  --gl-brand-500: #017CEE;  /* Apache Airflow brand colour */
   --gl-brand-600: #0163C0;
   --gl-brand-700: #014E97;
   --gl-brand-800: #013A70;
   --gl-brand-900: #01294F;
   --gl-brand-950: #011A33;
 
-  /* ---------- Rampa neutra (cinza frio, UI-nativo) ----------- */
+  /* ---------- Neutral ramp (cool grey, UI-native) ------------ */
   --gl-gray-0:   #FFFFFF;
   --gl-gray-50:  #F7F9FB;
   --gl-gray-100: #EDF1F5;
@@ -38,7 +38,7 @@
   --gl-gray-900: #1B2431;
   --gl-gray-950: #10161F;
 
-  /* ---------- Papéis semânticos — TEMA CLARO (padrão) -------- */
+  /* ---------- Semantic roles — LIGHT THEME (default) --------- */
   --gl-bg:             var(--gl-gray-50);
   --gl-surface:        var(--gl-gray-0);
   --gl-surface-raised: var(--gl-gray-100);
@@ -52,8 +52,8 @@
   --gl-on-accent:      var(--gl-gray-0);
   --gl-focus:          var(--gl-brand-500);
 
-  /* ---------- Estados de task (herdados do Airflow) ---------- */
-  /* Matiz = identidade do Airflow. Valor = retunado para AA.   */
+  /* ---------- Task states (inherited from Airflow) ----------- */
+  /* Hue = Airflow identity. Value = retuned to pass AA.        */
   --gl-state-none:              #3E7FB8;  /* lightblue  */
   --gl-state-scheduled:         #8A6A3E;  /* tan        */
   --gl-state-queued:            #6B7A90;  /* gray       */
@@ -68,9 +68,10 @@
   --gl-state-restarting:        #9333C7;  /* violet     */
   --gl-state-removed:           #9AA5B4;  /* lightgrey  */
 
-  /* ---------- Tipografia ------------------------------------ */
-  /* Inter = fonte da UI do Airflow. É escolha de transferência,
-     não preguiça. O display carrega a personalidade.          */
+  /* ---------- Typography ------------------------------------ */
+  /* Inter = the Airflow UI font. A transfer choice, not a lazy
+     one. The display face carries the personality. Self-hosted:
+     COEP require-corp makes a third-party CDN a dependency.   */
   --gl-font-display: "Familjen Grotesk", system-ui, sans-serif;
   --gl-font-body:    "Inter", system-ui, -apple-system, sans-serif;
   --gl-font-mono:    "JetBrains Mono", ui-monospace, monospace;
@@ -83,7 +84,7 @@
   --gl-text-xl:   1.75rem;
   --gl-text-2xl:  2.5rem;
   --gl-text-3xl:  3.5rem;
-  --gl-text-4xl:  4.5rem;  /* só no hero da home */
+  --gl-text-4xl:  4.5rem;  /* home hero only */
 
   --gl-leading-tight: 1.08;
   --gl-leading-snug:  1.35;
@@ -92,7 +93,7 @@
   --gl-tracking-display: -0.025em;
   --gl-tracking-label:    0.12em;
 
-  /* ---------- Espaçamento (base 4) -------------------------- */
+  /* ---------- Spacing (base 4) ------------------------------ */
   --gl-space-1:  0.25rem;
   --gl-space-2:  0.5rem;
   --gl-space-3:  0.75rem;
@@ -107,35 +108,35 @@
   --gl-max-width:   1200px;
   --gl-prose-width: 68ch;
 
-  /* ---------- Grade (a assinatura) -------------------------- */
-  --gl-cell-size:   14px;  /* lado do quadrado do grid   */
+  /* ---------- Grid (the signature) -------------------------- */
+  --gl-cell-size:   14px;  /* side of the grid square    */
   --gl-cell-gap:     3px;
   --gl-cell-radius:  2px;
 
-  /* ---------- Forma ----------------------------------------- */
+  /* ---------- Shape ----------------------------------------- */
   --gl-radius-cell: 2px;
   --gl-radius-node: 3px;
-  --gl-radius-ui:   6px;   /* alinhado ao Chakra da UI do Airflow */
+  --gl-radius-ui:   6px;   /* aligned with the Airflow UI's Chakra */
   --gl-radius-card: 8px;
   --gl-radius-pill: 999px;
 
-  /* ---------- Elevação -------------------------------------- */
+  /* ---------- Elevation ------------------------------------- */
   --gl-shadow-card: 0 1px 2px rgb(16 22 31 / 0.06), 0 1px 3px rgb(16 22 31 / 0.04);
   --gl-shadow-pop:  0 4px 12px rgb(16 22 31 / 0.10);
   --gl-ring-focus:  0 0 0 2px var(--gl-bg), 0 0 0 4px var(--gl-focus);
 
-  /* ---------- Movimento ------------------------------------- */
+  /* ---------- Motion ---------------------------------------- */
   --gl-ease-out:  cubic-bezier(0.16, 1, 0.3, 1);
   --gl-ease-snap: cubic-bezier(0.22, 0.61, 0.36, 1);
   --gl-dur-1: 120ms;
   --gl-dur-2: 200ms;
   --gl-dur-3: 320ms;
-  --gl-dur-pulse: 1600ms;  /* pulso do estado running */
-  --gl-dur-spin:  6000ms;  /* rotação do cata-vento da marca */
+  --gl-dur-pulse: 1600ms;  /* running state pulse */
+  --gl-dur-spin:  6000ms;  /* brand pinwheel rotation */
 }
 
 /* =============================================================
-   Tema escuro
+   Dark theme
    ============================================================= */
 :root[data-theme="dark"] {
   --gl-bg:             var(--gl-gray-950);
@@ -170,7 +171,7 @@
 }
 
 /* =============================================================
-   Acessibilidade — piso não negociável
+   Accessibility — non-negotiable floor
    ============================================================= */
 @media (prefers-reduced-motion: reduce) {
   :root {
