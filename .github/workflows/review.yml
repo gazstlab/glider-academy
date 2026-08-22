@@ -30,7 +30,26 @@ jobs:
         with:
           fetch-depth: 0
 
+      # This review is not a required check, deliberately. So a missing key must
+      # not paint a red X on every pull request: an always-red check that never
+      # blocks anything is the exact thing people learn to scroll past, and then
+      # they scroll past the real ones too. Warn, name the fix, and stand down.
+      - name: Is there a key?
+        id: key
+        env:
+          KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          if [ -z "$KEY" ]; then
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::ANTHROPIC_API_KEY missing — no contract review on this PR."
+            echo "The mechanical gate still blocks the merge. To switch this on:"
+            echo "  gh secret set ANTHROPIC_API_KEY --repo ${{ github.repository }}"
+          else
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+          fi
+
       - uses: anthropics/claude-code-action@24dcd50c0568f0fc9e9211213a4fd2d9eb15c4e0 # v1
+        if: steps.key.outputs.ok == 'true'
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           use_sticky_comment: true
@@ -50,7 +69,7 @@ jobs:
             1. `CLAUDE.md` — the short contract
             2. `.claude/agents/ds-reviewer.md` — **these are your review
                instructions.** Follow that file as if it were your system
-               prompt, including its "Como reportar" section and its limit on
+               prompt, including its "How to report" section and its limit on
                what counts as a finding
             3. `docs/design-system/DESIGN-SYSTEM.md` — the section for each
                component the diff touches, not the whole file
