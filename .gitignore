@@ -1,0 +1,66 @@
+# =============================================================
+# Glider — glider.academy
+# Stack: pnpm · Vite · React · TypeScript · Python/Pyodide ·
+#        Vitest · Playwright
+# =============================================================
+
+# ---------- Dependências ----------
+node_modules/
+.pnpm-store/
+.yarn/
+
+# ---------- Build ----------
+dist/
+build/
+.vite/
+*.tsbuildinfo
+
+# Runtime do Pyodide baixado no build. Grande e reproduzível.
+# NÃO ignorar *.whl: se o shim Python for vendorizado como wheel
+# fixado, ele precisa estar versionado.
+public/pyodide/
+
+# ---------- Testes ----------
+coverage/
+playwright-report/
+test-results/
+blob-report/
+.playwright/
+*.actual.png
+*.diff.png
+
+# ---------- Python ----------
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.ruff_cache/
+.pytest_cache/
+.mypy_cache/
+
+# ---------- Ambiente ----------
+# .env.example é versionado de propósito.
+.env
+.env.*
+!.env.example
+
+# ---------- Deploy ----------
+.vercel/
+.wrangler/
+
+# ---------- Claude Code ----------
+# settings.json é o contrato do time e VAI para o repositório.
+# settings.local.json é preferência de máquina e não vai.
+.claude/settings.local.json
+
+# ---------- Editor e SO ----------
+.DS_Store
+.AppleDouble
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# ---------- Logs ----------
+*.log
+npm-debug.log*
+pnpm-debug.log*

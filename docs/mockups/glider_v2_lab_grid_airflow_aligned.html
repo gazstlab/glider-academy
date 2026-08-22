@@ -1,0 +1,85 @@
+<link href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;700&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<h2 class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Mockup do lab: grid de estados de tasks por run, graph view e log do scheduler, em tema claro.</h2>
+<div style="border:0.5px solid var(--border);border-radius:12px;overflow:hidden;background:#F7F9FB;font-family:Inter,sans-serif">
+
+<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:#FFFFFF;border-bottom:1px solid #DCE3EB">
+<div style="display:flex;align-items:center;gap:12px">
+<span style="font-family:'Familjen Grotesk',sans-serif;font-weight:700;font-size:15px;color:#1B2431">Glider</span>
+<span style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.12em;color:#55677E">LIÇÃO 04 · 12 MIN</span>
+<span style="font-size:13px;color:#1B2431">Dependências e ordem de execução</span>
+</div>
+<span style="background:#017CEE;color:#FFF;font-size:12px;font-weight:500;padding:7px 14px;border-radius:6px">Disparar DAG</span>
+</div>
+
+<div style="display:flex;align-items:center;gap:8px;padding:8px 16px;background:#FFFFFF;border-bottom:1px solid #DCE3EB">
+<span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#55677E">SUA TRILHA</span>
+<svg width="272" height="14" viewBox="0 0 272 14" role="img" aria-label="Progresso: 3 lições concluídas, lição 4 em execução, 11 na fila">
+<rect x="0" y="0" width="14" height="14" rx="2" fill="#14804A"/><rect x="17" y="0" width="14" height="14" rx="2" fill="#14804A"/><rect x="34" y="0" width="14" height="14" rx="2" fill="#14804A"/>
+<rect x="51" y="0" width="14" height="14" rx="2" fill="none" stroke="#3BC44B" stroke-width="3"/>
+<rect x="68" y="0" width="14" height="14" rx="2" fill="none" stroke="#6B7A90" stroke-width="1"/><rect x="85" y="0" width="14" height="14" rx="2" fill="none" stroke="#6B7A90" stroke-width="1"/><rect x="102" y="0" width="14" height="14" rx="2" fill="none" stroke="#6B7A90" stroke-width="1"/><rect x="119" y="0" width="14" height="14" rx="2" fill="none" stroke="#6B7A90" stroke-width="1"/><rect x="136" y="0" width="14" height="14" rx="2" fill="none" stroke="#6B7A90" stroke-width="1"/><rect x="153" y="0" width="14" height="14" rx="2" fill="none" stroke="#6B7A90" stroke-width="1"/><rect x="170" y="0" width="14" height="14" rx="2" fill="none" stroke="#6B7A90" stroke-width="1"/><rect x="187" y="0" width="14" height="14" rx="2" fill="none" stroke="#6B7A90" stroke-width="1"/><rect x="204" y="0" width="14" height="14" rx="2" fill="none" stroke="#6B7A90" stroke-width="1"/><rect x="221" y="0" width="14" height="14" rx="2" fill="none" stroke="#6B7A90" stroke-width="1"/><rect x="238" y="0" width="14" height="14" rx="2" fill="none" stroke="#6B7A90" stroke-width="1"/><rect x="255" y="0" width="14" height="14" rx="2" fill="none" stroke="#6B7A90" stroke-width="1"/>
+</svg>
+<span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#55677E;font-variant-numeric:tabular-nums;margin-left:auto">04 / 15</span>
+</div>
+
+<div style="display:flex;align-items:stretch;background:#FFFFFF">
+
+<div style="width:246px;border-right:1px solid #DCE3EB;padding:12px 14px;flex:none">
+<div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.12em;color:#55677E;margin-bottom:10px">GRID</div>
+<svg width="216" height="150" viewBox="0 0 216 150" role="img" aria-label="Grid: linhas são tasks, colunas são DAG runs; limpar falhou no run 2 e está rodando no run 3">
+<text x="106" y="10" font-family="JetBrains Mono" font-size="11" fill="#55677E">08-20</text>
+<text x="140" y="10" font-family="JetBrains Mono" font-size="11" fill="#55677E">08-21</text>
+<text x="174" y="10" font-family="JetBrains Mono" font-size="11" fill="#55677E">08-22</text>
+<text x="0" y="32" font-family="JetBrains Mono" font-size="11" fill="#1B2431">extrair</text>
+<rect x="106" y="21" width="14" height="14" rx="2" fill="#14804A"/><path d="M109 28 l2.5 3 4-5.5" stroke="#FFF" stroke-width="1.6" fill="none"/>
+<rect x="140" y="21" width="14" height="14" rx="2" fill="#14804A"/><path d="M143 28 l2.5 3 4-5.5" stroke="#FFF" stroke-width="1.6" fill="none"/>
+<rect x="174" y="21" width="14" height="14" rx="2" fill="#14804A"/><path d="M177 28 l2.5 3 4-5.5" stroke="#FFF" stroke-width="1.6" fill="none"/>
+<text x="0" y="59" font-family="JetBrains Mono" font-size="11" fill="#1B2431">limpar</text>
+<rect x="106" y="48" width="14" height="14" rx="2" fill="#14804A"/><path d="M109 55 l2.5 3 4-5.5" stroke="#FFF" stroke-width="1.6" fill="none"/>
+<rect x="140" y="48" width="14" height="14" rx="2" fill="#C1272D"/><path d="M143.5 51.5 l7 7 M150.5 51.5 l-7 7" stroke="#FFF" stroke-width="1.6"/>
+<rect x="174" y="48" width="14" height="14" rx="2" fill="none" stroke="#3BC44B" stroke-width="3"/>
+<text x="0" y="86" font-family="JetBrains Mono" font-size="11" fill="#1B2431">somar</text>
+<rect x="106" y="75" width="14" height="14" rx="2" fill="#14804A"/><path d="M109 82 l2.5 3 4-5.5" stroke="#FFF" stroke-width="1.6" fill="none"/>
+<rect x="140" y="75" width="14" height="14" rx="2" fill="#C2410C"/><path d="M147 85 v-7 M144 81 l3-3 3 3" stroke="#FFF" stroke-width="1.5" fill="none"/>
+<rect x="174" y="75" width="14" height="14" rx="2" fill="none" stroke="#6B7A90" stroke-width="1"/>
+<text x="0" y="113" font-family="JetBrains Mono" font-size="11" fill="#1B2431">publicar</text>
+<rect x="106" y="102" width="14" height="14" rx="2" fill="#C2186C"/><path d="M150 105 l-7 8" stroke="#FFF" stroke-width="1.6"/>
+<rect x="140" y="102" width="14" height="14" rx="2" fill="#C2410C"/><path d="M147 112 v-7 M144 108 l3-3 3 3" stroke="#FFF" stroke-width="1.5" fill="none"/>
+<rect x="174" y="102" width="14" height="14" rx="2" fill="none" stroke="#6B7A90" stroke-width="1"/>
+<rect x="0" y="132" width="10" height="10" rx="2" fill="#14804A"/><text x="15" y="141" font-family="JetBrains Mono" font-size="11" fill="#55677E">success</text>
+<rect x="76" y="132" width="10" height="10" rx="2" fill="none" stroke="#3BC44B" stroke-width="2.5"/><text x="91" y="141" font-family="JetBrains Mono" font-size="11" fill="#55677E">running</text>
+<rect x="152" y="132" width="10" height="10" rx="2" fill="#C1272D"/><text x="167" y="141" font-family="JetBrains Mono" font-size="11" fill="#55677E">failed</text>
+</svg>
+</div>
+
+<div style="flex:1;min-width:0;padding:12px 14px">
+<div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.12em;color:#55677E;margin-bottom:10px">GRAPH · RUN 2026-08-22</div>
+<svg viewBox="0 0 380 150" width="100%" role="img" aria-label="Graph: extrair concluído, limpar rodando, somar e publicar na fila">
+<path d="M64 34 L64 48" stroke="#C2CDD9" stroke-width="1.5"/>
+<path d="M64 76 L64 90" stroke="#C2CDD9" stroke-width="1.5"/>
+<path d="M64 118 L64 132" stroke="#C2CDD9" stroke-width="1.5"/>
+<rect x="8" y="10" width="112" height="24" rx="3" fill="#FFF" stroke="#14804A" stroke-width="2"/>
+<text x="20" y="26" font-family="JetBrains Mono" font-size="11" fill="#1B2431">extrair</text>
+<rect x="8" y="52" width="112" height="24" rx="3" fill="#FFF" stroke="#3BC44B" stroke-width="2"/>
+<text x="20" y="68" font-family="JetBrains Mono" font-size="11" fill="#1B2431">limpar</text>
+<rect x="8" y="94" width="112" height="24" rx="3" fill="#FFF" stroke="#6B7A90" stroke-width="1"/>
+<text x="20" y="110" font-family="JetBrains Mono" font-size="11" fill="#55677E">somar</text>
+<rect x="8" y="132" width="112" height="24" rx="3" fill="#FFF" stroke="#6B7A90" stroke-width="1"/>
+<text x="20" y="148" font-family="JetBrains Mono" font-size="11" fill="#55677E">publicar</text>
+<rect x="160" y="10" width="212" height="132" rx="6" fill="#F7F9FB" stroke="#DCE3EB" stroke-width="1"/>
+<text x="174" y="30" font-family="JetBrains Mono" font-size="11" fill="#55677E">TASK · limpar</text>
+<text x="174" y="52" font-family="Inter" font-size="12" fill="#1B2431">Tentativa 2 de 3</text>
+<text x="174" y="72" font-family="JetBrains Mono" font-size="11" fill="#55677E">operator  PythonOperator</text>
+<text x="174" y="90" font-family="JetBrains Mono" font-size="11" fill="#55677E">retries   2</text>
+<text x="174" y="108" font-family="JetBrains Mono" font-size="11" fill="#55677E">duração   00:04</text>
+<text x="174" y="130" font-family="JetBrains Mono" font-size="11" fill="#3BC44B">running</text>
+</svg>
+</div>
+</div>
+
+<div style="border-top:1px solid #DCE3EB;background:#EDF1F5;padding:9px 16px">
+<pre style="margin:0;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.7;color:#55677E;overflow:hidden"><span style="color:#9AA8B8">08:14:02</span> <span style="color:#14804A">INFO</span>  extrair terminou em 1.8s
+<span style="color:#9AA8B8">08:14:04</span> <span style="color:#B26A00">WARN</span>  limpar falhou no run anterior — up_for_retry
+<span style="color:#9AA8B8">08:14:04</span> <span style="color:#3BC44B">RUN</span>   limpar iniciou — tentativa 2 de 3</pre>
+</div>
+
+</div>
