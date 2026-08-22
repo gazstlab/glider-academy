@@ -32,6 +32,8 @@ jobs:
           # need the base scripts, so: default ref.
           persist-credentials: false
 
+      - uses: ./.github/actions/tools
+
       - name: Is there a Projects credential?
         id: credential
         env:

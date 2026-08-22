@@ -27,8 +27,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      - name: Tools the checks assume
-        run: bash .claude/hooks/preflight.sh
+      - uses: ./.github/actions/tools
 
       - name: Is there an application to test?
         id: detect
@@ -69,6 +68,7 @@ jobs:
     needs: preflight
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: ./.github/actions/tools
 
       # The same script the /ds-check skill and the Edit/Write hook call. One
       # implementation, three callers: the same regex re-typed into YAML would
@@ -270,6 +270,7 @@ jobs:
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
 
+      - uses: ./.github/actions/tools
       - name: Did the headers reach the response?
         run: bash .github/scripts/smoke-headers.sh "${{ steps.deploy.outputs.url }}"
 
@@ -315,5 +316,6 @@ jobs:
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
 
+      - uses: ./.github/actions/tools
       - name: Did the headers reach the response?
         run: bash .github/scripts/smoke-headers.sh "${{ steps.deploy.outputs.url }}"

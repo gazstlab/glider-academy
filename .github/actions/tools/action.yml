@@ -1,0 +1,25 @@
+name: Tools
+description: >-
+  Installs the tools the §8 checks assume, then runs preflight. ubuntu-latest
+  ships jq but NOT ripgrep — an assumption this repository got wrong once, and
+  the first CI run caught.
+runs:
+  using: composite
+  steps:
+    - name: ripgrep
+      shell: bash
+      run: |
+        if command -v rg >/dev/null 2>&1; then
+          echo "ripgrep already present: $(rg --version | head -1)"
+          exit 0
+        fi
+        sudo apt-get update -qq
+        sudo apt-get install -y -qq ripgrep
+        rg --version | head -1
+
+    # Belt and braces. If the install above silently no-ops on some future
+    # image, this fails loudly rather than letting every §8 check pass for
+    # being unable to search.
+    - name: preflight
+      shell: bash
+      run: bash .claude/hooks/preflight.sh

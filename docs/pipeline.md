@@ -118,6 +118,12 @@ ripgrep the command exits 127, the condition is false, and the file passes for
 never having been read. `preflight.sh` refuses up front, and `gl_check_file`
 fails rather than passes when it cannot find `rg`.
 
+This one is not hypothetical. The very first CI run failed here: `ubuntu-latest`
+ships `jq` but **not** ripgrep, contrary to what whoever wrote the workflow
+assumed. `.github/actions/tools` now installs it, and every job that needs it
+declares that dependency. Had the guard not been there, the §8 checks would have
+swept the whole repository, found nothing, and reported "ok".
+
 **A half-translated locale.** Missing keys fall back silently. Nothing errors;
 the learner just gets a screen in two languages. `check-locales.sh` compares key
 sets in both directions and fails on any drift, so a locale is either absent or
@@ -137,3 +143,4 @@ failure mode a gate cannot have, because nobody investigates a green check.
 | Preview goes up with CI red | Vercel's Git integration switched back on in the dashboard |
 | Pyodide fails to initialise in production | COOP/COEP not served — see the smoke job |
 | CI fails on locale parity | an `en` file was started and left incomplete. Finish it or remove it |
+| `preflight` fails with "rg not found" | a job that needs ripgrep is missing `- uses: ./.github/actions/tools`. `ubuntu-latest` ships `jq` but not `rg` |
