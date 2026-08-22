@@ -1,0 +1,56 @@
+name: Harness or pipeline
+description: Hook, skill, agent, workflow, CI, deploy or board
+title: "[harness] "
+labels: ["type/chore", "area/harness"]
+body:
+  - type: dropdown
+    id: target
+    attributes:
+      label: What changes
+      options:
+        - Hook (.claude/hooks)
+        - Skill (.claude/skills)
+        - Agent (.claude/agents)
+        - CI workflow
+        - Deploy
+        - Board or issue automation
+        - The contract in CLAUDE.md
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem this solves
+      description: >
+        Describe the failure, not the solution. A harness changed on taste
+        becomes a harness nobody trusts.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: strength
+    attributes:
+      label: Does this tighten or loosen a gate?
+      description: >
+        Loosening a gate is a product decision, not an infrastructure one, and
+        needs a written reason. A gate people learn to work around stops being a
+        gate.
+      options:
+        - Tightens — starts catching something that slips through today
+        - Neutral — same coverage, less friction or less cost
+        - Loosens — starts letting through something blocked today
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: single-source
+    attributes:
+      label: Single source
+      description: >
+        `ds-rules.sh` is the single implementation of the §8 checks and already
+        has three callers: the hook, the skill and CI. The same regex in a
+        fourth place is a guarantee of drift.
+      options:
+        - label: "This change does not duplicate logic already in `.claude/hooks/ds-rules.sh`"
+        - label: "If it adds a check, that check has a case in `.claude/hooks/ds-selftest.sh` proving it can fail"
