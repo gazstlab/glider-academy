@@ -1,0 +1,26 @@
+{
+  "skill_name": "airflow-truth",
+  "evals": [
+    {
+      "id": 0,
+      "name": "trigger-rules-completas",
+      "prompt": "to escrevendo a lição 07 do Glider, sobre trigger rules. me lista todas as trigger rules que existem no Airflow 3 e explica em uma linha o que cada uma faz. isso vai virar tabela na lição então precisa estar completo",
+      "expected_output": "Lista completa e correta das trigger rules de 3.x, incluindo as que a memória costuma omitir (ALL_DONE_SETUP_SUCCESS, ALL_DONE_MIN_ONE_SUCCESS, ONE_DONE, NONE_SKIPPED). Deve ter consultado apache/airflow numa tag fixa.",
+      "files": []
+    },
+    {
+      "id": 1,
+      "name": "core-ou-provider",
+      "prompt": "no lab de Celery eu preciso montar o docker-compose. o CeleryExecutor vem no core do Airflow 3 ou é provider separado? e o KubernetesExecutor? preciso acertar isso senão a lição ensina errado",
+      "expected_output": "Ambos são providers no Airflow 3 (apache-airflow-providers-celery e apache-airflow-providers-cncf-kubernetes), não core. Deve ter verificado no repositório em vez de afirmar de memória.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "name": "onde-mora-o-timetable",
+      "prompt": "quero vendorizar a lógica de cron e data interval do Airflow pro shim do Glider, em vez de reimplementar. em que arquivos exatamente ela mora no Airflow 3?",
+      "expected_output": "task-sdk/src/airflow/sdk/definitions/timetables/ (_cron.py, _delta.py, interval.py, simple.py, events.py). NÃO airflow/timetables/, que é o caminho do 2.x. Deve ter verificado.",
+      "files": []
+    }
+  ]
+}

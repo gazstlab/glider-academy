@@ -1,7 +1,7 @@
 ---
 name: ds-check
 description: Roda o piso mecânico do design system do Glider — os quatro checks do DESIGN-SYSTEM.md §8 (hex fora de tokens, box-shadow fora dos tokens, border-radius acima de 8px, azul de marca usado como estado) e a paridade tokens.css/tokens.json do §12. Use antes de encerrar qualquer tarefa que tenha tocado em UI, CSS ou tokens.
-allowed-tools: Bash(${CLAUDE_SKILL_DIR}/ds-check.sh)
+allowed-tools: Bash(${CLAUDE_SKILL_DIR}/ds-check.sh:*)
 ---
 
 Rode:
