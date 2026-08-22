@@ -1,0 +1,135 @@
+name: Board
+
+on:
+  issues:
+    types: [opened, reopened, assigned, unassigned, labeled, unlabeled, closed]
+  pull_request_target:
+    types: [opened, reopened, ready_for_review, converted_to_draft, closed]
+
+permissions:
+  contents: read
+
+concurrency:
+  # Serialised per item. Two near-simultaneous events on the same card
+  # (labelling and assigning) would write the same field in a race, and the card
+  # would land in whichever column finished last — not whichever happened last.
+  group: board-${{ github.event.issue.number || github.event.pull_request.number }}
+  cancel-in-progress: false
+
+env:
+  PROJECT_OWNER: gazstlab
+  PROJECT_NUMBER: "1"
+
+jobs:
+  move:
+    name: move card
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # pull_request_target runs in the base context. Checking out a fork's
+          # head here would hand a third party's PR the PROJECTS_TOKEN. We only
+          # need the base scripts, so: default ref.
+          persist-credentials: false
+
+      - name: Is there a Projects credential?
+        id: credential
+        env:
+          TOKEN: ${{ secrets.PROJECTS_TOKEN }}
+        run: |
+          if [ -z "$TOKEN" ]; then
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::PROJECTS_TOKEN missing — the card will not move."
+            echo "The runner's GITHUB_TOKEN cannot reach Projects v2. Create a"
+            echo "fine-grained PAT with Projects read/write and run:"
+            echo "  gh secret set PROJECTS_TOKEN --repo ${{ github.repository }}"
+          else
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      # One decision table, in one place. Spreading this across several job
+      # `if:` conditions gives the board behaviour nobody can read end to end.
+      - name: Where it goes
+        id: target
+        if: steps.credential.outputs.ok == 'true'
+        env:
+          EVENT: ${{ github.event_name }}
+          ACTION: ${{ github.event.action }}
+          LABEL: ${{ github.event.label.name }}
+          HAS_ASSIGNEE: ${{ github.event.issue.assignee != null }}
+          MERGED: ${{ github.event.pull_request.merged }}
+          DRAFT: ${{ github.event.pull_request.draft }}
+        run: |
+          column=""
+          case "$EVENT:$ACTION" in
+            issues:opened|issues:reopened)   column="Inbox" ;;
+            issues:assigned)                 column="In progress" ;;
+            issues:unassigned)               column="Ready" ;;
+            issues:closed)                   column="Done" ;;
+            issues:labeled)
+              [ "$LABEL" = "state/blocked" ] && column="Blocked" ;;
+            issues:unlabeled)
+              # Unblocking returns the card to where it actually was: in
+              # progress if someone picked it up, in the queue if not.
+              if [ "$LABEL" = "state/blocked" ]; then
+                if [ "$HAS_ASSIGNEE" = "true" ]; then column="In progress"; else column="Ready"; fi
+              fi ;;
+            pull_request_target:opened|pull_request_target:reopened|pull_request_target:ready_for_review)
+              [ "$DRAFT" = "true" ] || column="In review" ;;
+            pull_request_target:converted_to_draft)
+              column="In progress" ;;
+            pull_request_target:closed)
+              # A PR closed without merging sends the issue back to the queue.
+              # Leaving it in "In review" creates a ghost card waiting on a
+              # review that is never coming.
+              if [ "$MERGED" = "true" ]; then column="Done"; else column="Ready"; fi ;;
+          esac
+
+          if [ -z "$column" ]; then
+            echo "Event $EVENT:$ACTION does not move a card."
+            echo "move=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "Target: $column"
+            echo "move=true" >> "$GITHUB_OUTPUT"
+            echo "column=$column" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Move
+        if: steps.credential.outputs.ok == 'true' && steps.target.outputs.move == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.PROJECTS_TOKEN }}
+          COLUMN: ${{ steps.target.outputs.column }}
+          EVENT: ${{ github.event_name }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          ITEM_ID: ${{ github.event.issue.node_id || github.event.pull_request.node_id }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          items="$ITEM_ID"
+
+          # A PR and the issue it closes are the same piece of work and have to
+          # move together, otherwise the board shows two rows for one task.
+          #
+          # closingIssuesReferences rather than grepping the body for "Closes #":
+          # GitHub decides what closes what, and it accepts several keywords,
+          # cross-repository references, and edits made after opening.
+          if [ "$EVENT" = "pull_request_target" ]; then
+            # shellcheck disable=SC2016  # $owner and $number are GraphQL variables, not shell
+            linked=$(gh api graphql \
+              -f owner="${REPO%/*}" -f repo="${REPO#*/}" -F number="$PR_NUMBER" -f query='
+                query($owner:String!, $repo:String!, $number:Int!) {
+                  repository(owner:$owner, name:$repo) {
+                    pullRequest(number:$number) {
+                      closingIssuesReferences(first:20) { nodes { id number } }
+                    }
+                  }
+                }' --jq '.data.repository.pullRequest.closingIssuesReferences.nodes[].id' || true)
+            [ -n "$linked" ] && items="$items
+          $linked"
+          fi
+
+          echo "$items" | tr -d ' ' | rg -v '^$' | sort -u | while read -r id; do
+            echo "item $id"
+            bash .github/scripts/board.sh \
+              "${{ env.PROJECT_OWNER }}" "${{ env.PROJECT_NUMBER }}" "$id" "$COLUMN"
+          done
