@@ -1,9 +1,17 @@
 # Glider Design System
 
-> **glider.academy** — data orchestration labs that run in the browser.
-> This document is an **implementation contract**, not a moodboard. It is written
-> to be read by AI agents (Claude Code, Copilot, Cursor) before any UI change,
+> An **implementation contract for UI and UX**, not a moodboard. Written to be
+> read by AI agents (Claude Code, Copilot, Cursor) before any interface change,
 > and by humans reviewing what the agent produced.
+>
+> **Scope: what a screen looks like and how it behaves.** Colour, type, spacing,
+> components, layout, motion, UI copy, accessibility.
+>
+> **Out of scope: what the product is, who it serves, and why it exists.** That
+> lives in `README.md`, with the working version for agents in `CLAUDE.md`. If
+> this document and those disagree about the product, those win — a design system
+> that also defines the business ends up being edited to win arguments about the
+> business.
 >
 > **v2** — the visual language now descends from the Apache Airflow identity.
 > See `DECISIONS.md` (D11–D18) for what was superseded and why.
@@ -17,9 +25,11 @@
 
 **Required reading order before writing any component:**
 
-1. `CLAUDE.md`, at the root — the short rules and the checklist
-2. this file, the section for the component you are about to touch
-3. `docs/design-system/tokens.css` — the exact variable names
+1. `README.md` — what the product is and who it is for. Read once; it is the
+   context every rule below assumes
+2. `CLAUDE.md`, at the root — the short rules and the checklist
+3. this file, the section for the component you are about to touch
+4. `docs/design-system/tokens.css` — the exact variable names
 
 **If the component you need is not here:** do not invent a style. Compose it from
 the primitives, or stop and propose the addition to this document first. A new
@@ -27,27 +37,41 @@ component only enters the code after it enters this file.
 
 **If this document conflicts with the code:** this document wins.
 
+**If a question is not about the interface, this is the wrong document.** Scope,
+audience, roadmap, what a lesson should teach, whether a feature belongs — none
+of that is decided here. Asking a design system to settle a product question is
+how design systems acquire opinions nobody signed off on.
+
 ---
 
-## 1. What we are building
+## 1. The design test
 
-| | |
+What Glider is, who it serves and what each lesson has to achieve are defined in
+`README.md`. Three facts from there constrain every rule in this document, and
+they are repeated here only as constraints, not as definitions:
+
+| From the product | What it forces on the design |
 |---|---|
-| **Product** | Interactive data orchestration labs, running entirely in the browser |
-| **Audience** | Data analysts and engineers who already write SQL/Python and are about to learn scheduling, dependencies, retries and backfill |
-| **Each screen's job** | Get the person to run a DAG and understand what happened — not to read about it |
-| **Tone** | Flight instructor: direct, technical, no forced enthusiasm, no emoji |
-| **Constraint** | No backend. Static + WASM only. The design never assumes server state |
-| **Language** | Product copy in pt-BR, in locale files under `src/locales/`. English is a supported expansion; a locale that exists must be complete |
+| Transfer is the goal | Where Airflow has a convention, inherit it |
+| No backend, static + WASM | The design never assumes server state or a round trip |
+| Copy is pt-BR, in locale files | No string is ever authored inside a component (§9) |
 
-**The principle behind v2 — transfer.** Whoever finishes Glider and opens a real
-Airflow has to recognise the screen in the first second. Every visual decision is
-judged by one question: *does this move closer to real Airflow, or further away?*
-Where Airflow has a convention, we inherit it. Where it has a known problem
-(contrast, state by colour alone), we fix it while keeping the hue identity.
+**The test, applied to every visual decision:** *does this move closer to real
+Airflow, or further away?*
+
+That is the whole of it. Where Airflow has a convention, we inherit it. Where it
+has a known problem — contrast, state by colour alone — we fix it while keeping
+the hue identity, because recognition survives a value change and does not
+survive a hue change.
+
+The test is deliberately narrow. It settles "should this cell be a square or a
+dot" and it does not settle "should this lesson exist" — the second is a product
+question, and answering it here would make the design system an authority on
+something it was never reviewed for.
 
 **The glider metaphor lives in the vocabulary**, not in the paint: the name, the
-tone, the track titles. No glider illustration in the UI.
+tone, the track titles. No glider illustration in the UI. This one is a design
+rule, and it is here because it is enforceable here.
 
 ---
 
@@ -160,12 +184,10 @@ the familiarity is the product. Personality comes from the display face, which i
 geometric and mildly idiosyncratic — just enough that Glider does not read as a
 fork of Airflow.
 
-Fonts are **self-hosted**. `vercel.json` serves
-`Cross-Origin-Embedder-Policy: require-corp`, which is the prerequisite for
-`SharedArrayBuffer` and therefore for interrupting a hung Python run in the lab.
-Under COEP, a font from a third-party CDN depends on that third party's headers,
-and the failure mode is a page that loads without its typeface, in production,
-with nothing red anywhere.
+Fonts are **self-hosted** — a constraint the platform imposes on the design, not
+a preference. The reason (cross-origin isolation, and what it buys the lab) is in
+`CONTRIBUTING.md`. What it means here: never reference a font from a CDN, and
+give every face a real fallback stack.
 
 **Scale** — `--gl-text-2xs` … `--gl-text-4xl` (11 → 72px). `4xl` in the home hero
 only.
@@ -329,15 +351,14 @@ the tokens, radius above 8px, brand blue as a state — across every source file
 plus the `tokens.css` ↔ `tokens.json` parity of §12 and the locale parity of §9.
 It has to pass.
 
-There is one implementation, in `.claude/hooks/ds-rules.sh`. A hook applies it to
-every file you save, the `/ds-check` skill applies it to the repository, and the
-`contract` job in CI applies it to the pull request, where it blocks the merge.
-The patterns also cover the camelCase spelling used in JSX (`boxShadow`,
-`borderRadius`), which the earlier version of this block let through.
+The patterns cover the camelCase spelling used in JSX (`boxShadow`,
+`borderRadius`), which an earlier version of this block let through.
 
-`.claude/hooks/ds-selftest.sh` exercises each of these rules against a case it
-must reject. A new check without a case there is a check that only knows how to
-pass — and today, with no `src/` yet, that would go unnoticed indefinitely.
+How those checks are wired — one implementation, three callers, and what happens
+on a pull request — is in `docs/pipeline.md`. It is not repeated here: this
+document says what the rules are, the pipeline document says how they are
+enforced, and a rule that drifts from its enforcement is easier to spot when the
+two are not interleaved.
 
 ---
 
@@ -354,19 +375,13 @@ pass — and today, with no `src/` yet, that would go unnoticed indefinitely.
 - **All UI copy lives in `src/locales/<locale>/*.json`, never inline.** `pt-BR` is
   the source locale
 
-### Locales
+That last rule is the only part of the language policy this document owns, and it
+is here because it is a component-level constraint: a string typed into a `.tsx`
+is a design defect the same way a raw hex is, and the reviewer catches it in the
+same pass.
 
-English is a supported expansion, not a promise for later. The rule is narrower
-and firmer than "translate everything": **whatever you start, you finish.**
-
-`.github/scripts/check-locales.sh` compares key sets against `pt-BR` in both
-directions and fails on any drift. A missing key is copy the reader will never
-see; an orphan key is copy nobody can reach, and usually the trace of a rename
-that landed on one side only.
-
-The reason is the same one behind D18. A half-translated locale falls back
-silently: no error, no red, just a screen in two languages. Silent failure is the
-one failure mode a teaching product cannot afford.
+Which locales exist, when English is added, and how parity is enforced are
+product and engineering decisions. They live in `README.md` and `CONTRIBUTING.md`.
 
 ---
 
@@ -387,36 +402,45 @@ it belongs to whoever merges the PR.
 
 ---
 
-## 11. Branding and use of the Airflow name
+## 11. What the interface may not draw
 
-Apache Airflow is a trademark of the Apache Software Foundation. Glider **is
-not** an ASF project and must not suggest endorsement.
+The trademark position — that Apache Airflow is an ASF trademark, that Glider is
+not an ASF project, and what that means commercially — is stated in `README.md`
+and `LICENSE-CONTENT`. This section is only the part a reviewer can check by
+looking at a diff:
 
-- Do not use the Airflow logo, or a pinwheel close enough to be confused with it.
-  Glider's mark is its own; the visual kinship is in the palette and the
+- **Do not draw the Airflow logo,** or a pinwheel close enough to be confused
+  with it. Glider's mark is its own; the visual kinship is in the palette and the
   structure, not in the symbol
-- Describe it as "labs for learning Apache Airflow", never "official Airflow Labs"
-- Include in the footer: *Apache Airflow é marca registrada da Apache Software
-  Foundation. Este projeto não é afiliado à ASF.*
-- Inheriting state colours from an Apache-2.0 project is legitimate use;
-  reproducing brand identity is a different matter. Before any commercial use,
-  read the ASF trademark policy
+- **The footer carries the trademark notice**, from the locale files like every
+  other string. Its wording is set in `README.md`, not here — one place, so a
+  legal line is never edited as a design tweak
+- **Copy never claims endorsement.** "labs for learning Apache Airflow", never
+  "official Airflow Labs"
+
+Inheriting state colours from an Apache-2.0 project is legitimate; reproducing
+brand identity is not. That distinction is why §3 inherits hues and §11 forbids
+the symbol — the same boundary, seen from two sides.
 
 ---
 
-## 12. Files
+## 12. The files this document governs
 
 ```
-CLAUDE.md               ← at the ROOT. The short contract, loaded every session
-CONTRIBUTING.md         ← issue to production: branches, commits, who reviews what
-docs/
-├─ pipeline.md          ← CI, deploy, board and rulesets
-└─ design-system/
-   ├─ DESIGN-SYSTEM.md  ← this file, the narrative source
-   ├─ tokens.css        ← single source of truth for the values
-   ├─ tokens.json       ← the same values for Tailwind/Style Dictionary
-   └─ DECISIONS.md      ← the record of exceptions and changes of direction
+docs/design-system/
+├─ DESIGN-SYSTEM.md  ← this file, the narrative source for UI and UX
+├─ tokens.css        ← single source of truth for the values
+├─ tokens.json       ← the same values for Tailwind/Style Dictionary
+└─ DECISIONS.md      ← design exceptions and changes of direction
 ```
+
+Four files, and their authority stops at the interface. `DECISIONS.md` records
+design decisions only: a row there settles what a component looks like, never
+what the product does.
+
+For anything outside that boundary: `README.md` for the product, `CLAUDE.md` for
+the working contract agents load each session, `CONTRIBUTING.md` for the
+issue-to-production flow, `docs/pipeline.md` for CI, deploy and the board.
 
 `tokens.css` and `tokens.json` have to be generated from the same origin or
 verified in CI. If they diverge, `tokens.css` wins.

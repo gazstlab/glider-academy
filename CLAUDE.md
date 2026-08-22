@@ -3,8 +3,17 @@
 You are working on **Glider** (glider.academy): data orchestration labs that run
 entirely in the browser, with no backend.
 
-Full source of truth: `docs/design-system/DESIGN-SYSTEM.md`.
-Values: `docs/design-system/tokens.css`. This file is the executable summary.
+| Question | Answered in |
+|---|---|
+| What the product is, who it serves, why | `README.md` — the source of truth |
+| What a screen looks like and how it behaves | `docs/design-system/DESIGN-SYSTEM.md` — UI and UX only |
+| Exact design values | `docs/design-system/tokens.css` |
+| How work moves from issue to production | `CONTRIBUTING.md`, `docs/pipeline.md` |
+
+This file is the executable summary of the first two. When it is thinner than
+they are, they win — but the split above holds in both directions: do not ask the
+design system what the product should do, and do not ask the README what a border
+radius should be.
 
 ## Language
 
@@ -31,12 +40,23 @@ carries the error into their own production. `DECISIONS.md` D18 says the same
 about states; it holds for all semantics: trigger rules, logical date, config
 precedence, executor lifecycle.
 
-## In one sentence
+## The product, in one paragraph
+
+Interactive labs where a data analyst or engineer writes a DAG, triggers it, and
+watches the grid change state — learning scheduling, dependencies, retries and
+backfill by running them, not by reading about them. Tone of a flight instructor:
+direct, technical, no forced enthusiasm. No backend; nothing assumes server state.
+
+**Transfer is the goal.** Someone who finishes Glider and opens a real Airflow
+should recognise the screen in the first second.
+
+## The design, in one sentence
 
 The visual language descends from the Apache Airflow UI — brand blue `#017CEE`,
 state colours inherited from `airflow.utils.state`, and the grid of squares as
-the signature. The test for every decision: *does this move closer to real
-Airflow, or further away?*
+the signature. The test for every **design** decision: *does this move closer to
+real Airflow, or further away?* That test settles interface questions and not
+product ones.
 
 ## The twelve rules
 
@@ -67,8 +87,9 @@ is also what makes the English expansion expensive later.
 ## Branding
 
 Do not reproduce the Apache Airflow logo, or a pinwheel close to it. The kinship
-is in palette and structure, not in the symbol. The footer always carries the
-ASF trademark notice.
+is in palette and structure, not in the symbol. The footer always carries the ASF
+trademark notice, from the locale files like every other string — its wording is
+set in `README.md`, so a legal line is never edited as a design tweak.
 
 ## Before finishing a task
 

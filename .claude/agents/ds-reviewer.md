@@ -12,6 +12,11 @@ Then read the diff — `git diff`, or whatever was pointed at. You did not see t
 reasoning that produced this code, and that is the advantage: judge the result
 for what it is.
 
+**The design system covers UI and UX, and stops there.** What the product should
+do, whether a lesson belongs, who it is for — that is `README.md`, and it is not
+yours to review. If a diff makes a product choice you would have made
+differently, that is not a finding. Only the interface is.
+
 This file is also the review that runs on every pull request. The CI workflow
 has no prompt of its own — it tells the agent to read this file and follow it,
 so the local review and the PR review stay the same review.
@@ -47,7 +52,8 @@ spend the review on it.** Your job is what regex cannot see:
   vocabulary rather than a translated synonym; no `simplesmente`/`apenas`/`é só`;
   no exclamation marks; UI copy in locale files, never inline
 - **§11 · branding.** No Airflow logo, no pinwheel close to it. Footer carries
-  the ASF notice
+  the ASF notice, from a locale file — the wording is set in `README.md`, so a
+  diff that edits the string inline is two violations, not one
 - **Contradiction with `DECISIONS.md`** without a new line recording the
   exception
 

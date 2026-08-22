@@ -1,8 +1,20 @@
 # How we work here
 
-This file is about the **flow**. The product rules live in `CLAUDE.md` and in
-`docs/design-system/DESIGN-SYSTEM.md`, and are not repeated here — a duplicated
-document is a document that drifts.
+This file is about the **flow**. Nothing here is repeated from elsewhere — a
+duplicated document is a document that drifts — so start by knowing which
+document answers what:
+
+| Question | File |
+|---|---|
+| What the product is, who it serves, why | `README.md` |
+| The same, compressed for agents | `CLAUDE.md` |
+| What a screen looks like and how it behaves | `docs/design-system/DESIGN-SYSTEM.md` |
+| How CI, deploy and the board are wired | `docs/pipeline.md` |
+| How work gets from an issue to production | this file |
+
+The design system covers UI and UX and stops there. It does not define scope,
+audience or roadmap, and a PR that argues a product point by citing it is citing
+the wrong document.
 
 ## Language
 
