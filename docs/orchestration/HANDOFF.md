@@ -11,8 +11,12 @@ Read this before starting a spec. Rewrite it before finishing one.
 ---
 
 **Last audited spec:** S00 — the issue form the queue needs before it can start
-**Verdict:** REPAIR, then PASS on re-audit. Merged in #3
+**Verdict:** REPAIR, then PASS on re-audit. Merged in #3, closed as #5
 **Date:** 2026-08-23
+
+**The queue** is issues #5 to #38, filed through the forms. #5 is closed; the
+next unblocked spec is **#6**, the scaffold. There are no spec files in the
+repository — see `docs/orchestration.md` §10.
 
 ## What exists
 
@@ -24,7 +28,7 @@ Nothing that runs. The repository holds a contract and no product:
 | Tokens | `docs/design-system/tokens.css`, mirrored in `tokens.json`, parity enforced |
 | Harness | 3 skills, 6 hooks, 2 agents under `.claude/` — `ds-reviewer` and `spec-auditor` |
 | Pipeline | 5 workflows, 6 scripts, **6** issue forms, **28** labels under `.github/` |
-| Orchestration | `docs/orchestration.md`, `docs/specs/` (34 specs), this file |
+| Orchestration | `docs/orchestration.md`, this file. The queue is the open issues |
 | Application | **none.** No `package.json`, no `src/`, no lockfile |
 
 CI knows this: `preflight` sets `app=false` when `package.json` is missing, and
@@ -83,14 +87,20 @@ row in `DECISIONS.md`:
 
 ## Debt
 
-- **No issues exist yet.** Nothing in `docs/specs/` has been filed. Until a spec
-  has an issue number, its branch takes `00` — `docs/orchestration.md` §3
+- **No secret is configured.** `gh api .../actions/secrets` returns nothing, so
+  `PROJECTS_TOKEN` is absent and the board workflow stands down on every issue
+  and PR — by design it warns rather than failing, so no card is being created
+  and nothing is red. `ANTHROPIC_API_KEY` is absent too, so the contract review
+  does not run; and without the `VERCEL_*` three there is no deploy. All are
+  one-time human steps in `docs/pipeline.md`
+- **The board itself was never created.** `board-bootstrap.sh` has not been run,
+  and the local `gh` token lacks `project` scope
 - **The npm interval is temporary.** `dependabot.yml` carries `interval: monthly`
-  and keeps `day: monday` for when **S33** puts it back to weekly. Five weekly
+  and keeps `day: monday` for when **#38** puts it back to weekly. Five weekly
   dependency PRs, each running Playwright on two browsers against a strict gate,
   is not a cost worth paying across a thirty-four spec build-out
 - **The toolchain is not installed.** `pnpm` is absent, and the local Node is 25
-  against `.nvmrc`'s 22. S01 mandates `engine-strict=true`, so `pnpm install`
+  against `.nvmrc`'s 22. #6 mandates `engine-strict=true`, so `pnpm install`
   will refuse to run until the shell is on Node 22 — `nvm use`, then
   `corepack enable`. Every acceptance command in the queue starts with `pnpm`
 - **`python3` has no `yaml` module** on this machine, and `yq` is not installed.
@@ -99,5 +109,5 @@ row in `DECISIONS.md`:
 - **The `gh` token lacks `project` scope.** `gh auth refresh -s project,read:project`
   is a one-time human step, documented in `board-bootstrap.sh`
 - **The mockups under `docs/mockups/` are exempt from §8** and contain a Google
-  Fonts link, raw hex, and a pinwheel §11 arguably forbids. S05 and S07 add
+  Fonts link, raw hex, and a pinwheel §11 arguably forbids. #10 and #12 add
   superseded banners before anyone copies them
