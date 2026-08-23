@@ -25,7 +25,7 @@ step and what they are allowed to know while doing it.
 ```
 main (coordinator)                          subagent (implementer)
   |                                                 |
-  |-- reads docs/specs/, picks next unblocked ----->|
+  |-- reads the open issues, picks next unblocked -->|
   |-- hands down the context packet --------------->|
   |                                                 |-- implements
   |                                                 |-- runs its own acceptance
@@ -106,7 +106,7 @@ not improvised by the coordinator.
 You are implementing one spec, and only that spec.
 
 SPEC
-<the full contents of docs/specs/NNN-slug.md>
+<the full body of the issue, verbatim — gh issue view <n> --json body>
 
 STATE OF THE WORLD
 <the full contents of docs/orchestration/HANDOFF.md>
@@ -171,7 +171,7 @@ Naming the hole and the spec that collects it turns it into a handoff item.
 ### Template
 
 ```markdown
-## DELIVERS · S12
+## DELIVERS · #17 · the DAG graph
 
 ### Artifacts
 - `src/engine/graph.ts` (new)
@@ -197,7 +197,7 @@ $ pnpm test src/engine/graph.test.ts
 ```
 
 ### Debt
-- Setup and teardown relationships are not modelled. S13 decides whether they
+- Setup and teardown relationships are not modelled. #18 decides whether they
   are needed; lesson 04 does not use them
 ```
 
@@ -289,7 +289,9 @@ merge.
 
 ## 8 · The spec format
 
-Every file in `docs/specs/` carries the same eight sections, in this order.
+Every spec carries the same eight sections, in this order. They are the fields
+of `.github/ISSUE_TEMPLATE/06-feature.yml`, so an issue opened through the form
+holds the shape without anyone remembering to.
 
 | Section | Holds |
 |---|---|
@@ -317,20 +319,20 @@ is as auditable as work done.
 ### Template
 
 ```markdown
-# S12 · the DAG graph — parse, topological order, cycle detection
+[feature] S12 · the DAG graph — parse, topological order, cycle detection
 
 | | |
 |---|---|
 | Form | `06-feature` |
 | Labels | `type/feature` `area/lab` |
 | Size | S |
-| Branch | `feat/nn-engine-graph` |
+| Branch | `feat/17-engine-graph` |
 
 ## Depends on
-S09
+#14
 
 ## Unblocks
-S13, S17, S22
+#18, #22, #27
 
 ## Context
 Two paragraphs. What this is for, and what the next spec does with it.
@@ -368,32 +370,83 @@ Two paragraphs. What this is for, and what the next spec does with it.
 
 ## 9 · A worked handoff
 
-S12 finishes. The coordinator has the `DELIVERS` block above, and the auditor has
-returned `PASS`. It commits, opens the PR, and builds the packet for S13:
+#17 finishes. The coordinator has the `DELIVERS` block above, and the auditor has
+returned `PASS`. It commits, opens the PR, and builds the packet for #18:
 
-- **The spec**: `docs/specs/S13-trigger-rules.md`, verbatim
+- **The spec**: the body of issue #18, verbatim
 - **The state**: `HANDOFF.md`, whose `Surface` now carries `buildGraph`,
   `topoOrder`, `detectCycle` and the `TaskDef` shape
 - **The reading list**: `CLAUDE.md`; `.claude/skills/airflow-truth/SKILL.md`;
-  `DESIGN-SYSTEM.md §3 Task states`. Not the whole design system, and not S12's
-  source — S13 needs S12's *surface*, which it already has
+  `DESIGN-SYSTEM.md §3 Task states`. Not the whole design system, and not #17's
+  source — #18 needs #17's *surface*, which it already has
 - **The fence**: `src/engine/triggerRules.ts`, its test, and `DECISIONS.md`
 - **The acceptance**: the test command, `pnpm typecheck`, and a check that every
   rule carries its `# verified:` annotation
-- **The branch**: `feat/nn-trigger-rules`
+- **The branch**: `feat/18-trigger-rules` — the `nn` is the issue number
 
-S13's agent never reads `graph.ts`. It reads that `topoOrder` exists and what it
+#18's agent never reads `graph.ts`. It reads that `topoOrder` exists and what it
 returns. That is the whole point: the packet is small because the previous spec
 did the work of describing itself.
 
-## 10 · Converting the queue into issues
+## 10 · The queue is the issues
 
-The specs are the source. Issues are generated from them, not the other way
-round, and only once the pipeline is live — `docs/pipeline.md` §3 is explicit
-that labels have to exist before the first issue, because GitHub discards an
-unknown label silently and the issue opens with no classification at all.
+**A spec exists in exactly one place: its issue.** There is no file in the
+repository holding a second copy — that copy would drift, and the drift would be
+invisible, because nothing compares them.
 
-Order: merge the pipeline, enable the ruleset, sync the labels, then create the
-issues from `docs/specs/` with the form and labels each spec names in its header.
-A spec's issue number is what fills the `nn` in its branch name, so the branch
-name in the spec header is written when the issue is created, not before.
+The issue number is the `nn` in the branch name, which is why the branch cannot
+be named before the issue exists. `docs/pipeline.md` §3 fixes the order that
+makes this work: merge the pipeline, enable the ruleset, sync the labels, then
+file. A label that does not exist yet is discarded silently by GitHub and the
+issue opens with no classification at all.
+
+To add a spec to the queue, open a `06-feature` issue — the form's fields are the
+eight sections, so it is filled in rather than remembered. Write `Depends on` as
+issue numbers, and only ever backwards: a dependency on a later issue is a
+scoping error.
+
+### Numbers assigned in advance
+
+Two files are edited by more than one spec, and both number their entries. The
+assignments are fixed here so that two agents never claim the same one.
+
+| `DESIGN-SYSTEM.md` §5 | | `DECISIONS.md` | |
+|---|---|---|---|
+| 5.11 `Header` | #11 | **D19** the Glider mark | #10 |
+| 5.12 `Footer` | #11 | **D20** Glider's task-state set | #14 |
+| 5.13 `BrandMark` | #10 | **D21** the callout kind tokens | #15 |
+| 5.14 `ThemeSwitch` | #11 | **D22** tokens imported from `docs/` | #7 |
+| 5.15 `Panel` | #25 | **D23** unsupported trigger rules | #18 |
+| 5.16 `TaskDetailPanel` | #25 | | |
+| 5.17 `Toast` | #25 | | |
+| 5.18 `Hero` | #33 | | |
+| 5.19 `TrackCard` | #33 | | |
+
+### Files more than one spec touches
+
+Sequential execution makes these audit checks rather than scheduling
+constraints — but they are why every spec carries a `Files` fence.
+
+| File | Issues |
+|---|---|
+| `DESIGN-SYSTEM.md` §5 | #10, #11, #15, #25, #33 |
+| `DECISIONS.md` | #7, #10, #14, #15, #18 |
+| `tokens.css` | **#15 only** — and it escalates to a human by design |
+| `index.html` | #6, #12, #16 — one block each, no restructuring |
+| `vite.config.ts` | #6 writes the blocks; #21 and #29 fill in values |
+| `dependabot.yml` | #5 set npm monthly, #38 restores weekly |
+
+`package.json` and `pnpm-lock.yaml` are touched by #6 only: every dependency the
+queue needs is declared there, including ones nothing imports yet, because a
+lockfile does not auto-merge. Locale files are split one per copy-owning surface
+for the same reason — without it, eleven specs would edit `lab.json`.
+
+### The critical path
+
+```
+#6 → #7 → #14 → #17 → #18 → #19 → #20 → #26 → #37 → #38
+```
+
+Ten hops, three of them M with a verification burden. A second chain carries more
+risk than length: `#6 → #12 → #21 → #22 → #23 → #37`, where #22 — the Python
+`airflow` shim — is where "looks right" and "is right" diverge silently.

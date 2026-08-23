@@ -94,18 +94,21 @@ set in `README.md`, so a legal line is never edited as a design tweak.
 
 ## Orchestration
 
-Implementation runs as a queue. `docs/specs/` holds one file per spec; each is
-sized so that a single agent, holding only that spec's context, can finish it.
-**One at a time, strictly sequential.** The full protocol — prompt templates,
-the audit checklist, the spec format — is `docs/orchestration.md`.
+Implementation runs as a queue, and **the queue is the open issues** — filed
+through the forms, one per spec, each sized so that a single agent holding only
+that issue's context can finish it. There is no copy in the repository: a spec
+that lived in both a file and an issue would drift, and the issue is what the
+board, the labels and the branch number already point at. **One at a time,
+strictly sequential.** The full protocol — prompt templates, the audit
+checklist, the spec format — is `docs/orchestration.md`.
 
 **main coordinates and does not implement.** It reads specs, spawns agents,
 audits, hands off. A coordinator that implements is carrying five specs of dead
 detail by the sixth one and starts answering from memory of what it built — the
 same failure the rule above names. Context is a budget, not a resource.
 
-**Each spec goes to one subagent, with a closed packet of six things:** the spec
-verbatim; `docs/orchestration/HANDOFF.md`; a reading list of document
+**Each spec goes to one subagent, with a closed packet of six things:** the
+issue body verbatim; `docs/orchestration/HANDOFF.md`; a reading list of document
 *sections*, not files; the file fence; the acceptance commands; the branch name.
 Nothing else, and never "read the repository and figure it out".
 
