@@ -1,0 +1,131 @@
+name: New feature
+description: Product code — runtime, engine, screens or build
+title: "[feature] "
+labels: ["type/feature"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **The file fence is a contract, not a suggestion.** Whoever picks this
+        up works from what is written here and nothing else, and a write
+        outside the listed paths fails the audit even when the change is
+        correct.
+
+        The fields below carry the sections of a spec file, so the issue holds
+        the atomicity contract in its own structure rather than by convention.
+        The format, and why it is shaped this way, is in
+        `docs/orchestration.md`.
+
+  - type: input
+    id: depends
+    attributes:
+      label: Specs this depends on
+      description: >
+        Only specs that come earlier in the queue. A dependency on later work
+        is a scoping error, and it is cheaper to find here than three specs
+        later. Write "none" if there is none.
+      placeholder: "S09, S12"
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: What this is for, and what the next spec does with it
+      description: >
+        Three paragraphs at most. Why this exists, not how it is built — the
+        how is the steps field.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reading
+    attributes:
+      label: Reading list — document sections, not files
+      description: >
+        `DESIGN-SYSTEM.md §5.4`, never "the design system". A 452-line
+        instruction gets skimmed; a section number gets followed. Nothing
+        outside this list is to be read.
+      placeholder: |
+        - CLAUDE.md
+        - docs/design-system/DESIGN-SYSTEM.md §3 Task states
+        - README.md § Stack
+    validations:
+      required: true
+
+  - type: textarea
+    id: files
+    attributes:
+      label: Files this may write. Anything outside is out of bounds
+      description: >
+        An explicit allowlist of paths. Without one, "atomic" describes an
+        intention, and intention does not survive finding something adjacent
+        and slightly broken.
+      placeholder: |
+        - src/engine/graph.ts — new
+        - src/engine/graph.test.ts — new
+    validations:
+      required: true
+
+  - type: textarea
+    id: do
+    attributes:
+      label: Steps
+      description: Numbered, in order, each one small enough to be checked on its own.
+    validations:
+      required: true
+
+  - type: textarea
+    id: surface
+    attributes:
+      label: What it exports for the next spec — paths and signatures
+      description: >
+        The test is not "is it a signature" but "would the next spec have to
+        read my files to find this out". A wrong entry here is the most
+        expensive kind: the next spec builds against a symbol that does not
+        exist and fails on its first import.
+      placeholder: |
+        src/engine/graph.ts exports:
+        - buildGraph(d: DagDef): Graph
+        - topoOrder(g: Graph): TaskId[]
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Commands and their expected result
+      description: >
+        Commands somebody else can run, with the result written out. "Works"
+        is not a result.
+      placeholder: |
+        pnpm test src/engine/graph.test.ts — all green
+        pnpm typecheck — no errors
+    validations:
+      required: true
+
+  - type: textarea
+    id: scope
+    attributes:
+      label: Out of scope
+      description: >
+        Name the temptations, so that declining them is compliance rather than
+        initiative. Work correctly declined is as auditable as work done.
+      placeholder: |
+        - Trigger rules — S13
+        - Anything that imports React
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: contract
+    attributes:
+      label: Contract
+      description: >
+        The three rules product code breaks most often. Each one is enforced
+        somewhere — a hook, a review, or CI — and finding out there costs a
+        round trip.
+      options:
+        - label: "No UI copy inline — it lives in `src/locales` (§9)"
+        - label: "No Airflow claim without `# verified: <path> @ <tag>`"
+        - label: "No component in code that is not already in `DESIGN-SYSTEM.md` §5"
