@@ -230,6 +230,13 @@ The verdicts:
 | | | |
 |---|---|---|
 | `PASS` | Every criterion met, with evidence | Commit, open the PR, next spec |
+
+**Label the pull request with the spec's own labels.** `release.yml` builds the
+release notes by label, so an unlabelled PR lands under *Everything else* no
+matter what it did — and the labels are already written in the spec's header, so
+there is nothing to decide. A `type/chore` PR is excluded from the notes on
+purpose: the notes describe what the learner got, and the foundation is not
+something the learner got.
 | `REPAIR` | A gap in the **work**, fixable inside the fence | One round back to the same subagent |
 | `BLOCKED` | A gap in the **spec**, or a decision a human owns | Stop the queue |
 
@@ -266,6 +273,19 @@ One overwritten file rather than an append-only log, deliberately. A log grows
 until nobody loads it, and the moment nobody loads it the handoff has silently
 stopped happening with nothing turning red. Same failure shape the pipeline
 document is careful about elsewhere.
+
+**Two lines in it are the coordinator's, not the implementer's.** `Last audited
+spec` and `Verdict` record something no implementer can know — the audit has not
+run when it writes the file, and an agent that fills them in is asserting that
+its own work passed. The implementer leaves them alone; the coordinator sets
+them when the verdict comes back.
+
+**And the coordinator has one duty after the merge.** A spec's `Debt` may name
+something that only becomes true once the branch lands — a label that syncs, a
+workflow that fires. That is collected by the coordinator, not by a later spec,
+and the handoff is stale until it is. S00 owed exactly this: `type/feature`
+existed in `labels.yml` and not on GitHub until `labels-sync.yml` ran on the
+merge.
 
 ## 8 · The spec format
 
