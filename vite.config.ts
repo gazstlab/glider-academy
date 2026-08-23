@@ -18,6 +18,13 @@ export default defineConfig({
   worker: {},
   optimizeDeps: {},
 
+  // src/styles/base.css declares the three §6 breakpoints as `@custom-media`.
+  // Lightning CSS — which Vite 8 uses to minify — treats that at-rule as a
+  // draft and, without this flag, only *warns* and passes it through: the build
+  // stays green and `@media (--gl-bp-md)` ships to dist/ matching nothing.
+  // D9 (no editable canvas below 900px) would be silently un-enforced.
+  css: { lightningcss: { drafts: { customMedia: true } } },
+
   server: { headers: { ...crossOriginIsolation } },
   preview: { headers: { ...crossOriginIsolation } },
 });
