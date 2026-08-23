@@ -1,79 +1,137 @@
-# Contrato do Glider — leia antes de tocar em qualquer tela
+# Glider's contract — read this before touching any screen
 
-Você está trabalhando no **Glider** (glider.academy): laboratórios de orquestração de
-dados que rodam inteiros no navegador, sem backend.
+You are working on **Glider** (glider.academy): data orchestration labs that run
+entirely in the browser, with no backend.
 
-Fonte de verdade completa: `docs/design-system/DESIGN-SYSTEM.md`.
-Valores: `docs/design-system/tokens.css`. Este arquivo é o resumo executável.
+| Question | Answered in |
+|---|---|
+| What the product is, who it serves, why | `README.md` — the source of truth |
+| What a screen looks like and how it behaves | `docs/design-system/DESIGN-SYSTEM.md` — UI and UX only |
+| Exact design values | `docs/design-system/tokens.css` |
+| How work moves from issue to production | `CONTRIBUTING.md`, `docs/pipeline.md` |
 
-## A regra que vem antes das outras
+This file is the executable summary of the first two. When it is thinner than
+they are, they win — but the split above holds in both directions: do not ask the
+design system what the product should do, and do not ask the README what a border
+radius should be.
 
-**Não afirme comportamento do Airflow de memória.** Confira na fonte antes de escrever em
-lição, componente ou código — `/airflow-truth` tem o procedimento e os caminhos. Alvo: 3.x.
+## Language
 
-O Glider ensina. Uma afirmação plausível e falsa é pior que uma lacuna, porque o aluno leva
-o erro para a produção dele. `DECISIONS.md` D18 diz o mesmo sobre estados; vale para toda a
-semântica: trigger rules, data lógica, precedência de config, ciclo de vida de executor.
+The repository is in English: code, comments, file names, docs, issues, PRs,
+labels, commit messages. The **product** is in Portuguese (pt-BR): lesson copy,
+UI strings, error messages — and all of it lives in locale files under
+`src/locales/`, never inline (§9).
 
-## Em uma frase
+`pt-BR` is the source locale. English is a supported expansion, and CI enforces
+key parity: a locale that exists must be complete. A half-translated one falls
+back silently, which is the one failure mode a teaching product cannot afford.
 
-A linguagem visual descende da UI do Apache Airflow — azul de marca `#017CEE`, cores de
-estado herdadas de `airflow.utils.state`, e o grid de quadrados como assinatura. O
-critério de toda decisão: *isso aproxima ou afasta do Airflow de verdade?*
+Airflow vocabulary is not translated in any locale. `task`, `DAG run`,
+`upstream`, `backfill`, `up_for_retry` stay as they are.
 
-## As doze regras
+## The rule that comes before the others
 
-1. Nenhum hex fora de `tokens.css`. Use `--gl-*` semântico, nunca as rampas cruas.
-2. Espaçamento só da escala `--gl-space-*`.
-3. Sombra só dos tokens `--gl-shadow-card`, `--gl-shadow-pop`, `--gl-ring-focus`.
-4. `border-radius` máximo 8px (`--gl-radius-card`), 2px nas células do grid.
-5. **O azul de marca nunca é cor de estado.** Azul num quadrado do grid é bug.
-6. Estado de task = cor **e** glifo **e** texto acessível. Nunca só cor.
-7. Nenhum estado inventado: se não está em `airflow.utils.state`, não existe aqui.
-8. Progresso é coluna do grid. Barra de porcentagem não existe no produto.
-9. Número em lista, grid ou instrumento: mono + `tabular-nums`.
-10. Anima só o pulso do `running` (e o cata-vento do hero, uma volta na carga).
-11. Sem emoji, sem gradiente, sem biblioteca de componentes nova.
-12. Componente que não está no design system entra no documento **antes** do código.
+**Never state Airflow behaviour from memory.** Check the source before writing it
+into a lesson, a component or code — `/airflow-truth` has the procedure and the
+paths. Target: 3.x.
 
-## Escrita de UI
+Glider teaches. A plausible false claim is worse than a gap, because the learner
+carries the error into their own production. `DECISIONS.md` D18 says the same
+about states; it holds for all semantics: trigger rules, logical date, config
+precedence, executor lifecycle.
 
-Sentence case. Verbo ativo que diz o resultado (`Disparar DAG` → `DAG disparado`).
-**Use o vocabulário do Airflow** — task, DAG run, data lógica, upstream, backfill,
-up_for_retry. Explique na primeira aparição; não substitua por sinônimo.
-Erro explica o que quebrou e o que fazer. Sem "simplesmente", sem exclamação.
+## The product, in one paragraph
 
-## Marca
+Interactive labs where a data analyst or engineer writes a DAG, triggers it, and
+watches the grid change state — learning scheduling, dependencies, retries and
+backfill by running them, not by reading about them. Tone of a flight instructor:
+direct, technical, no forced enthusiasm. No backend; nothing assumes server state.
 
-Não reproduza o logo do Apache Airflow nem um cata-vento próximo dele. O parentesco é de
-paleta e estrutura, não de símbolo. Rodapé sempre com o aviso de marca da ASF.
+**Transfer is the goal.** Someone who finishes Glider and opens a real Airflow
+should recognise the screen in the first second.
 
-## Antes de terminar a tarefa
+## The design, in one sentence
+
+The visual language descends from the Apache Airflow UI — brand blue `#017CEE`,
+state colours inherited from `airflow.utils.state`, and the grid of squares as
+the signature. The test for every **design** decision: *does this move closer to
+real Airflow, or further away?* That test settles interface questions and not
+product ones.
+
+## The twelve rules
+
+1. No hex outside `tokens.css`. Use semantic `--gl-*`, never the raw ramps.
+2. Spacing only from the `--gl-space-*` scale.
+3. Shadows only from the `--gl-shadow-card`, `--gl-shadow-pop`, `--gl-ring-focus` tokens.
+4. `border-radius` capped at 8px (`--gl-radius-card`), 2px on grid cells.
+5. **Brand blue is never a state colour.** Blue in a grid square is a bug.
+6. Task state = colour **and** glyph **and** accessible text. Never colour alone.
+7. No invented states: if it is not in `airflow.utils.state`, it does not exist here.
+8. Progress is a grid column. A percentage bar does not exist in this product.
+9. A number in a list, grid or instrument: mono + `tabular-nums`.
+10. Animate only the `running` pulse (and the hero pinwheel, one turn on load).
+11. No emoji, no gradients, no new component library.
+12. A component not in the design system enters the document **before** the code.
+
+## UI writing
+
+Sentence case. An active verb that names the result (`Disparar DAG` → `DAG
+disparado`). **Use Airflow vocabulary** — task, DAG run, data lógica, upstream,
+backfill, up_for_retry. Explain on first appearance; do not swap for a synonym.
+An error says what broke and what to do about it. No "simplesmente", no
+exclamation marks.
+
+All of it in locale files. Copy inline in a component is a §9 violation, and it
+is also what makes the English expansion expensive later.
+
+## Branding
+
+Do not reproduce the Apache Airflow logo, or a pinwheel close to it. The kinship
+is in palette and structure, not in the symbol. The footer always carries the ASF
+trademark notice, from the locale files like every other string — its wording is
+set in `README.md`, so a legal line is never edited as a design tweak.
+
+## Before finishing a task
 
 ```
 /ds-check
 ```
 
-Roda os quatro checks do §8 no repositório inteiro mais a paridade
-`tokens.css` ↔ `tokens.json` do §12. Um hook já aplica os mesmos checks a cada arquivo
-salvo, então isso aqui é a rede — se o hook bloqueou, você já sabe.
+Runs the four §8 checks across the whole repository, plus the
+`tokens.css` ↔ `tokens.json` parity of §12. A hook already applies the same
+checks to every file you save, so this is the safety net — if the hook blocked
+you, you already know.
 
-Depois confira o piso: 360px, teclado, foco visível, reduced-motion, contraste, tema
-claro e escuro na mesma tela, e o grid legível em simulação de daltonismo.
+The same script runs in CI, in the `contract` job, and **blocks the merge**. It
+is not a second implementation: the hook, the skill and CI all call
+`.claude/hooks/ds-rules.sh`, and the same regex in a fourth place would be a
+guarantee of drift. Running it early only saves the round trip.
 
-## O que existe em `.claude/`
+Then check the floor: 360px, keyboard, visible focus, reduced-motion, contrast,
+light and dark on the same screen, and the grid readable under colour-blindness
+simulation.
+
+## What lives in `.claude/`
 
 | | |
 |---|---|
-| `/ds-check` | os quatro checks do §8 + paridade de tokens. Antes de encerrar tarefa de UI |
-| `/airflow-truth` | como conferir uma afirmação sobre o Airflow contra a fonte |
-| `/decision` | escreve a linha em `DECISIONS.md`, numerada e datada |
-| agente `ds-reviewer` | lê um diff de UI contra o contrato, em contexto limpo. O que regex não pega: componente fora do documento, estado inventado, estado só por cor |
+| `/ds-check` | the four §8 checks + token parity. Before closing any UI task |
+| `/airflow-truth` | how to check an Airflow claim against the source |
+| `/decision` | writes the row in `DECISIONS.md`, numbered and dated |
+| agent `ds-reviewer` | reads a UI diff against the contract, in a clean context. What regex misses: component outside the document, invented state, state by colour alone |
+| `hooks/ds-selftest.sh` | proves the checks know how to reject. A new check without a case here is a check that only knows how to pass |
 
-Hooks aplicam sozinhos, a cada `Edit`/`Write`: os checks do §8 no arquivo salvo, a paridade
-de tokens, e escalada para o usuário em qualquer alteração de `tokens.css`.
+`ds-reviewer` is also what reviews the PR: the review workflow has no prompt of
+its own, it tells the agent to read that file. One contract, one place.
 
-## Se precisar contrariar alguma regra
+Hooks apply on their own, on every `Edit`/`Write`: the §8 checks on the saved
+file, token parity, and escalation to the user on any change to `tokens.css`.
 
-Use `/decision`. A linha precisa de data, o que foi quebrado, por quê, e qual alternativa
-dentro do sistema foi descartada. Sem essa linha, a exceção é bug.
+The issue-to-production flow lives in `CONTRIBUTING.md`. How CI, deploy, the
+board and the rulesets are wired lives in `docs/pipeline.md`.
+
+## If you need to break a rule
+
+Use `/decision`. The row needs a date, what was broken, why, and which
+alternative inside the system was discarded. Without that row, the exception is
+a bug.

@@ -1,17 +1,17 @@
 #!/usr/bin/env bash
-# DESIGN-SYSTEM.md §12: tokens.css e tokens.json precisam ser verificados.
-# Se divergirem, tokens.css vence.
+# DESIGN-SYSTEM.md §12: tokens.css and tokens.json have to be verified against
+# each other. If they diverge, tokens.css wins.
 #
-# Compara o CONJUNTO de cores hex dos dois arquivos. É onde mora o risco
-# real: alguém muda uma cor num arquivo e esquece o outro.
+# Compares the SET of hex colours in the two files. That is where the real risk
+# lives: someone changes a colour in one file and forgets the other.
 #
-# Deliberadamente NÃO compara valores numéricos. Há assimetrias legítimas
-# (0ms só existe no css, no bloco de prefers-reduced-motion; os breakpoints
-# 640px/900px só existem no json) e um check que acusa isso seria abandonado
-# na primeira semana.
+# Deliberately does NOT compare numeric values. There are legitimate asymmetries
+# (0ms exists only in the css, inside the prefers-reduced-motion block; the
+# 640px/900px breakpoints exist only in the json) and a check that flagged those
+# would be abandoned in its first week.
 set -uo pipefail
 
-# Só age quando o arquivo editado for um dos dois arquivos de token.
+# Only acts when the edited file is one of the two token files.
 payload=$(cat)
 file=$(printf '%s' "$payload" | jq -r '.tool_input.file_path // empty')
 case "$file" in
@@ -31,11 +31,11 @@ only_json=$(comm -13 <(hexes "$CSS") <(hexes "$JSON"))
 
 if [ -n "$only_css" ] || [ -n "$only_json" ]; then
   {
-    echo "tokens.css e tokens.json divergiram (DESIGN-SYSTEM.md §12)."
-    [ -n "$only_css" ]  && { echo; echo "  só em tokens.css:";  printf '%s\n' "$only_css"  | sed 's/^/    /'; }
-    [ -n "$only_json" ] && { echo; echo "  só em tokens.json:"; printf '%s\n' "$only_json" | sed 's/^/    /'; }
+    echo "tokens.css and tokens.json have diverged (DESIGN-SYSTEM.md §12)."
+    [ -n "$only_css" ]  && { echo; echo "  only in tokens.css:";  printf '%s\n' "$only_css"  | sed 's/^/    /'; }
+    [ -n "$only_json" ] && { echo; echo "  only in tokens.json:"; printf '%s\n' "$only_json" | sed 's/^/    /'; }
     echo
-    echo "tokens.css vence. Alinhe tokens.json com ele."
+    echo "tokens.css wins. Align tokens.json with it."
   } >&2
   exit 2
 fi

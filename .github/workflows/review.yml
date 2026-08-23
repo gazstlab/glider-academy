@@ -1,0 +1,135 @@
+name: Contract review
+
+on:
+  pull_request:
+    types: [opened, synchronize, ready_for_review]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  contract:
+    name: review
+    runs-on: ubuntu-latest
+    # A draft is not a review request. And a fork PR gets no secrets: the job
+    # would fail for a missing key, which in the checks list looks like a defect
+    # in the PR rather than in the configuration.
+    if: >-
+      github.event.pull_request.draft == false &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      # This review is not a required check, deliberately. So a missing key must
+      # not paint a red X on every pull request: an always-red check that never
+      # blocks anything is the exact thing people learn to scroll past, and then
+      # they scroll past the real ones too. Warn, name the fix, and stand down.
+      - name: Is there a key?
+        id: key
+        env:
+          KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          if [ -z "$KEY" ]; then
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::ANTHROPIC_API_KEY missing — no contract review on this PR."
+            echo "The mechanical gate still blocks the merge. To switch this on:"
+            echo "  gh secret set ANTHROPIC_API_KEY --repo ${{ github.repository }}"
+          else
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: anthropics/claude-code-action@24dcd50c0568f0fc9e9211213a4fd2d9eb15c4e0 # v1
+        if: steps.key.outputs.ok == 'true'
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          use_sticky_comment: true
+          track_progress: true
+          # Review only. No write tools, no push. The action can implement
+          # changes requested by comment; that is switched off deliberately,
+          # because code arriving without going through the issue-and-branch
+          # cycle is exactly what this pipeline exists to prevent.
+          claude_args: |
+            --allowedTools "Read,Grep,Glob,Bash(git diff:*),Bash(git log:*),Bash(git show:*),Bash(rg:*),Bash(gh pr diff:*),Bash(gh pr view:*),Bash(gh api:*)"
+          prompt: |
+            You are reviewing a pull request for Glider.
+
+            Do not invent your own review criteria. They are already written in
+            the repository, and your first task is to read them:
+
+            1. `CLAUDE.md` — the short contract
+            2. `.claude/agents/ds-reviewer.md` — **these are your review
+               instructions.** Follow that file as if it were your system
+               prompt, including its "How to report" section and its limit on
+               what counts as a finding
+            3. `docs/design-system/DESIGN-SYSTEM.md` — the section for each
+               component the diff touches, not the whole file
+            4. `docs/design-system/DECISIONS.md` — the record of exceptions
+
+            Then read this PR's diff with `gh pr diff`.
+
+            Why read the agent instead of me restating the rules here: the local
+            review and the PR review have to be the same review. A rule copied
+            into this workflow drifts from the document on the first edit, and
+            then there are two contracts.
+
+            Note on language: the whole repository is in English. Product UI
+            copy is Portuguese and lives in locale files under `src/locales/` —
+            never inline (§9). So Portuguese appearing inside a component is
+            itself a finding, and Portuguese inside a locale file is correct.
+
+            ## What NOT to review
+
+            The mechanical floor is already covered by CI's `contract` job,
+            which runs the four §8 checks, locale parity and token parity. Raw
+            hex, `box-shadow` outside the tokens, radius above 8px and brand
+            blue used as a state are handled by regex. Spending the review on
+            those wastes the only layer that can see what regex cannot.
+
+            Do not review the §10 floor either — 360px, keyboard, contrast,
+            colour blindness, light and dark. You do not open the page. That
+            floor belongs to the human who merges, and claiming it is fine would
+            be asserting without checking.
+
+            And do not review product decisions. The design system governs UI and
+            UX; what the product should do and who it serves is `README.md`, and
+            it was not opened for your opinion. A choice you would have made
+            differently is not a finding unless a written rule says so.
+
+            ## One trap specific to this repository
+
+            If the diff contains any claim about how Apache Airflow behaves —
+            states, trigger rules, logical date, config precedence, core versus
+            provider, where a symbol lives — check it against the source with
+            `gh api` against a pinned tag, following
+            `.claude/skills/airflow-truth/SKILL.md`. Do not trust your memory.
+
+            This is not decorative rigour. `DECISIONS.md` D18: teaching
+            something false is the worst defect this product can have, because
+            the learner carries the error into their own production. And the
+            failure mode here is you being sure — the certainty is the symptom,
+            not the guarantee.
+
+            If you could not verify something, say you could not. Do not turn
+            your own doubt into a finding, and do not turn it into an approval.
+
+            ## Format
+
+            One comment, in English, sentence case, no emoji.
+
+            One entry per finding: `file:line`, the rule or section violated,
+            and the fix from inside the system. Ordered by severity.
+
+            If the diff is compliant, say so in one line and stop. A reviewer
+            asked for findings always finds some, and chasing all of them leads
+            to over-engineering. A style preference the document does not cover
+            is not a finding.

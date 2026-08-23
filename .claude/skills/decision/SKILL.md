@@ -1,38 +1,40 @@
 ---
 name: decision
-description: Registra uma decisão de design em docs/design-system/DECISIONS.md, no formato da tabela, numerada e datada. Use ao contrariar uma regra do design system, ao mudar de rumo, ou ao fixar uma escolha de arquitetura que o código sozinho não explica.
-argument-hint: [o que foi decidido]
+description: Records a design decision in docs/design-system/DECISIONS.md, in the table's format, numbered and dated. Use when contradicting a design system rule, when changing direction, or when locking in an architectural choice the code alone does not explain.
+argument-hint: [what was decided]
 disable-model-invocation: true
 allowed-tools: Bash(${CLAUDE_SKILL_DIR}/add.sh:*) Read
 ---
 
-`CLAUDE.md` é claro: exceção sem linha em `DECISIONS.md` é bug. Esta skill escreve a linha.
+`CLAUDE.md` is explicit: an exception without a line in `DECISIONS.md` is a bug.
+This skill writes the line.
 
-## Antes de escrever
+## Before writing
 
-Leia `docs/design-system/DECISIONS.md`. Se a decisão nova **substitui** uma anterior, a
-convenção do arquivo é marcar isso na própria célula da decisão — veja D11, D12, D13, D16,
-D17, que usam `**Substitui Dx**`. Não apague a linha antiga: o histórico de por que o rumo
-mudou é metade do valor do arquivo.
+Read `docs/design-system/DECISIONS.md`. If the new decision **supersedes** an
+earlier one, the file's convention is to mark that in the decision cell itself —
+see D11, D12, D13, D16 and D17, which use `**Supersedes Dx**`. Do not delete the
+old row: the history of why the direction changed is half the file's value.
 
-## Escrever
+## Writing
 
 ```bash
-${CLAUDE_SKILL_DIR}/add.sh "<decisão>" "<motivo>" "<descartado>"
+${CLAUDE_SKILL_DIR}/add.sh "<decision>" "<reason>" "<discarded>"
 ```
 
-O número `Dnn` e a data saem automáticos. Os três campos são obrigatórios.
+The `Dnn` number and the date are automatic. All three fields are required.
 
-Cada um tem um trabalho, e o terceiro é o que costuma ser pulado:
+Each one has a job, and the third is the one people skip:
 
-- **decisão** — o que passa a valer, em uma linha. Se substitui outra, comece com
-  `**Substitui Dx** · `
-- **motivo** — por que, ligado ao produto. `porque fica melhor` não é motivo; `porque
-  transferência é o produto e isso aproxima do Airflow real` é
-- **descartado** — a alternativa dentro do sistema que você considerou e recusou. Sem ela
-  a linha não serve para nada daqui a seis meses: quem ler não vai saber se a opção óbvia
-  foi avaliada ou nem passou pela cabeça de ninguém
+- **decision** — what now holds, in one line. If it supersedes another, start
+  with `**Supersedes Dx** · `
+- **reason** — why, tied to the product. `because it looks better` is not a
+  reason; `because transfer is the product and this moves closer to real
+  Airflow` is
+- **discarded** — the alternative inside the system you considered and refused.
+  Without it the row is useless six months from now: whoever reads it will not
+  know whether the obvious option was evaluated or never crossed anyone's mind
 
-Depois de escrever, confirme que a tabela continua renderizando (a linha tem exatamente
-quatro células) e leia a linha de volta em voz alta. Se ela não convence você, a decisão
-provavelmente ainda não está madura.
+After writing, confirm the table still renders (the row has exactly four cells)
+and read the line back out loud. If it does not convince you, the decision
+probably is not ripe yet.

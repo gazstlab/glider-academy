@@ -1,0 +1,92 @@
+name: Lesson or lab
+description: New content — a lesson, a lab, or a revision of an existing one
+title: "[lesson] "
+labels: ["type/lesson", "area/content"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        The acceptance criterion for every lesson is **transfer**: the learner
+        opens a real Airflow afterwards and recognises what they saw here.
+
+  - type: dropdown
+    id: track
+    attributes:
+      label: Track
+      options:
+        - Fundamentals
+        - Scheduling and logical date
+        - Dependencies and trigger rules
+        - Retries and failures
+        - Backfill
+        - Executors
+        - Not sure yet
+    validations:
+      required: true
+
+  - type: textarea
+    id: transfer
+    attributes:
+      label: What the learner will recognise in a real Airflow after this
+      description: >
+        Not the same as "what they learn". Write the concrete screen, log line
+        or behaviour they will identify in production.
+      placeholder: >
+        They see up_for_retry in a real Airflow grid and know, without clicking,
+        that the task failed, still has an attempt left, and is waiting out the
+        retry delay.
+    validations:
+      required: true
+
+  - type: textarea
+    id: claims
+    attributes:
+      label: Airflow claims this lesson will make
+      description: >
+        One per line. Every one must be checked against the source before it
+        becomes prose. This field exists because the list is obvious now and
+        invisible once the lesson is written.
+      placeholder: |
+        - all_success is the default trigger rule
+        - a daily schedule's data interval closes at the start of the next day
+        - CeleryExecutor does not ship in Airflow 3 core
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Target Airflow version
+      description: >
+        Minor, not major. "Airflow 3" is not an answer — TriggerRule changed
+        both its home and its contents inside the 3.x line.
+      placeholder: "3.3.1"
+    validations:
+      required: true
+
+  - type: textarea
+    id: states
+    attributes:
+      label: Task states the lesson displays
+      description: Every one must exist in `airflow.utils.state`. No exceptions (D18).
+      placeholder: success, failed, up_for_retry, skipped
+
+  - type: input
+    id: locales
+    attributes:
+      label: Locales
+      description: >
+        Content ships in pt-BR. English is optional, but if an `en` file exists
+        it must be complete — CI enforces key parity, it does not accept a
+        half-translated locale.
+      placeholder: "pt-BR"
+
+  - type: checkboxes
+    id: contract
+    attributes:
+      label: Before closing this issue
+      options:
+        - label: Every claim above was checked with `/airflow-truth`, against a pinned tag
+        - label: "The check is recorded next to the claim (`# verified: path @ tag`)"
+        - label: No state outside `airflow.utils.state` appears in the lesson
+        - label: UI copy lives in locale files, never inline (§9)

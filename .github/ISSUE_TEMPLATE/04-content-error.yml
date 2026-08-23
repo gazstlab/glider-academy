@@ -1,0 +1,82 @@
+name: Content error
+description: Glider stated something false about Airflow
+title: "[content] "
+labels: ["type/content-error", "area/content", "severity/critical"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This is the worst defect this product can have, which is why it gets its
+        own form and its own severity. `DECISIONS.md` D18: teaching something
+        false is unacceptable, because the learner carries the error into their
+        own production. A broken screen is something people see; a false claim
+        is something they believe.
+
+        A confirmed content error jumps ahead of everything else.
+
+  - type: input
+    id: where
+    attributes:
+      label: Where it is published
+      description: Lesson, component, tooltip, error message. Link if you have one.
+      placeholder: Lesson 07 · trigger rules · third paragraph
+    validations:
+      required: true
+
+  - type: textarea
+    id: claim
+    attributes:
+      label: The claim, copied verbatim
+    validations:
+      required: true
+
+  - type: textarea
+    id: why
+    attributes:
+      label: Why it is wrong
+      description: What Airflow actually does.
+    validations:
+      required: true
+
+  - type: input
+    id: source
+    attributes:
+      label: Source in apache/airflow, with path and tag
+      description: >
+        File path plus the tag. Without a tag it does not settle anything: the
+        same path answers differently across minors.
+      placeholder: airflow-core/src/airflow/task/trigger_rule.py @ 3.3.1
+    validations:
+      required: true
+
+  - type: textarea
+    id: excerpt
+    attributes:
+      label: The source excerpt that proves it
+      render: python
+
+  - type: dropdown
+    id: reach
+    attributes:
+      label: Reach
+      description: >
+        If the same claim was repeated in several places, the fix is a sweep,
+        not an edit.
+      options:
+        - One occurrence
+        - Repeated in more than one place
+        - Not sure
+    validations:
+      required: true
+
+  - type: dropdown
+    id: locales
+    attributes:
+      label: Which locales carry the error
+      options:
+        - pt-BR only
+        - en only
+        - All locales
+        - Not sure
+    validations:
+      required: true

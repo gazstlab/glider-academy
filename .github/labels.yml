@@ -1,0 +1,104 @@
+# Labels live in version control. A label created by hand in the browser
+# disappears in the first cleanup; a label in a file is reviewable in a PR and
+# comes back on its own.
+#
+# Colors mirror the light-theme state palette so the board reads next to the
+# product. They are NOT tokens: this is GitHub chrome, not Glider UI, and
+# tokens.css remains the single source of truth for product values.
+
+# ---------- type · what the work is ----------
+- name: "type/lesson"
+  color: "017CEE"
+  description: "Teaching content: a lesson or a lab"
+- name: "type/component"
+  color: "3E7FB8"
+  description: "UI component, variant or prop"
+- name: "type/bug"
+  color: "C1272D"
+  description: "Something does not work as it should"
+- name: "type/content-error"
+  color: "8B0000"
+  description: "Glider taught something false about Airflow"
+- name: "type/chore"
+  color: "6B7A90"
+  description: "Harness, pipeline, dependency, refactor"
+
+# ---------- track · where the content lives ----------
+- name: "track/fundamentals"
+  color: "D6E9FB"
+  description: "Track · fundamentals"
+- name: "track/scheduling"
+  color: "D6E9FB"
+  description: "Track · scheduling and logical date"
+- name: "track/dependencies"
+  color: "D6E9FB"
+  description: "Track · dependencies and trigger rules"
+- name: "track/retries"
+  color: "D6E9FB"
+  description: "Track · retries and failures"
+- name: "track/backfill"
+  color: "D6E9FB"
+  description: "Track · backfill"
+- name: "track/executors"
+  color: "D6E9FB"
+  description: "Track · executors"
+
+# ---------- area · which part of the repository ----------
+- name: "area/design-system"
+  color: "0E8A8F"
+  description: "docs/design-system and the UI contract"
+- name: "area/lab"
+  color: "0E8A8F"
+  description: "Lab engine, Pyodide, DAG execution"
+- name: "area/content"
+  color: "0E8A8F"
+  description: "Lesson copy, locales, writing"
+- name: "area/harness"
+  color: "0E8A8F"
+  description: "Hooks, skills and agents under .claude"
+- name: "area/pipeline"
+  color: "0E8A8F"
+  description: "CI, deploy, board, templates"
+
+# ---------- quality · §10, where this product's bugs hide ----------
+- name: "quality/a11y"
+  color: "B26A00"
+  description: "Quality floor §10 · accessibility"
+- name: "quality/contrast"
+  color: "B26A00"
+  description: "Quality floor §10 · contrast below the minimum"
+- name: "quality/keyboard"
+  color: "B26A00"
+  description: "Quality floor §10 · keyboard navigation or focus"
+- name: "quality/responsive"
+  color: "B26A00"
+  description: "Quality floor §10 · breaks below 900px or at 360px"
+- name: "quality/theme"
+  color: "B26A00"
+  description: "Quality floor §10 · diverges between light and dark"
+- name: "quality/i18n"
+  color: "B26A00"
+  description: "Quality floor §9 · UI copy inline, or locales out of parity"
+
+# ---------- state · why the card is not moving ----------
+# Airflow calls it state, not status. The product's vocabulary wins over the
+# GitHub habit here, the same way it does in the UI.
+- name: "state/blocked"
+  color: "C2410C"
+  description: "Waiting on something external. Moves the card to Blocked"
+- name: "state/needs-decision"
+  color: "6B4EC7"
+  description: "Needs a line in DECISIONS.md before it can move"
+- name: "state/needs-verification"
+  color: "6B4EC7"
+  description: "Contains an Airflow claim not yet checked against the source"
+
+# ---------- severity ----------
+- name: "severity/critical"
+  color: "8B0000"
+  description: "Jumps the queue. Teaches something false, or production is down"
+
+# ---------- release notes ----------
+- name: "no-changelog"
+  color: "9AA5B4"
+  description: "Kept out of the release notes"

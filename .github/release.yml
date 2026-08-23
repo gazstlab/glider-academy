@@ -1,0 +1,35 @@
+# Categories for GitHub's generated release notes. The labels come from
+# .github/labels.yml and are applied by the issue forms, so the notes organise
+# themselves as long as the issue was opened through the right form.
+changelog:
+  exclude:
+    labels:
+      - no-changelog
+      - type/chore
+    authors:
+      - dependabot
+  categories:
+    - title: We taught something false, and fixed it
+      labels:
+        - type/content-error
+    - title: New content
+      labels:
+        - type/lesson
+    - title: Interface
+      labels:
+        - type/component
+        - area/design-system
+    - title: Fixes
+      labels:
+        - type/bug
+    - title: Accessibility and quality floor
+      labels:
+        - quality/a11y
+        - quality/contrast
+        - quality/keyboard
+        - quality/responsive
+        - quality/theme
+        - quality/i18n
+    - title: Everything else
+      labels:
+        - "*"

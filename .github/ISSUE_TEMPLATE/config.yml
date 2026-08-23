@@ -1,0 +1,14 @@
+# Blank issues are off on purpose. The forms exist to force the question people
+# skip, and a "open a blank issue" link next to them turns all of them into
+# decoration.
+blank_issues_enabled: false
+contact_links:
+  - name: Product and design system rules
+    url: https://github.com/gazstlab/glider-academy/blob/main/CLAUDE.md
+    about: Read the contract before proposing UI. A component enters the document before the code.
+  - name: How we work here
+    url: https://github.com/gazstlab/glider-academy/blob/main/CONTRIBUTING.md
+    about: Issue to production, branch and commit conventions, and who reviews what.
+  - name: Question about how Airflow behaves
+    url: https://airflow.apache.org/docs/apache-airflow/stable/
+    about: Not a Glider issue. And check the source before bringing it here as a claim.

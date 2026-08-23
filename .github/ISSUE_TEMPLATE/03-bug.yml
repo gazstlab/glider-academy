@@ -1,0 +1,96 @@
+name: Bug
+description: Something does not work as it should
+title: "[bug] "
+labels: ["type/bug"]
+body:
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open lab 03
+        2. Trigger the DAG
+        3. Look at the grid column
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What should happen
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: What happened
+    validations:
+      required: true
+
+  - type: markdown
+    attributes:
+      value: |
+        The next three fields are not paperwork. §10 is where this product's
+        bugs hide: almost every visual defect here is a theme, a width or a
+        keyboard problem, and a report without those turns into a two-day round
+        trip.
+
+  - type: dropdown
+    id: theme
+    attributes:
+      label: Theme
+      options:
+        - Light
+        - Dark
+        - Both
+        - Not applicable
+    validations:
+      required: true
+
+  - type: dropdown
+    id: width
+    attributes:
+      label: Window width
+      options:
+        - Phone, around 360px
+        - Below 900px (no editable canvas in the lab, D9)
+        - Desktop
+        - Any width
+    validations:
+      required: true
+
+  - type: dropdown
+    id: keyboard
+    attributes:
+      label: Does it happen with keyboard-only navigation?
+      options:
+        - "Yes"
+        - "No"
+        - Did not test
+        - Not applicable
+    validations:
+      required: true
+
+  - type: dropdown
+    id: locale
+    attributes:
+      label: Locale
+      options:
+        - pt-BR
+        - en
+        - Both
+        - Not applicable
+    validations:
+      required: true
+
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and version
+      placeholder: Firefox 141, Safari 26
+
+  - type: textarea
+    id: extra
+    attributes:
+      label: Console output, screenshot, anything else

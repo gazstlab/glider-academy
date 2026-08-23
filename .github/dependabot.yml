@@ -1,0 +1,32 @@
+version: 2
+updates:
+  # Actions are third-party code with access to the repository and its secrets.
+  # They are pinned by SHA in the workflows, which is safe and also frozen:
+  # without this block, pinning would quietly turn into debt instead of
+  # protection.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    commit-message:
+      prefix: "chore(pipeline)"
+    labels:
+      - "type/chore"
+      - "area/pipeline"
+
+  # Inert until package.json exists. Committed now so the product's first
+  # dependency is already under watch.
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore(deps)"
+    labels:
+      - "type/chore"
+    groups:
+      dev:
+        dependency-type: development

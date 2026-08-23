@@ -1,72 +1,101 @@
 # Glider Design System
 
-> **glider.academy** — laboratórios de orquestração de dados que rodam no navegador.
-> Este documento é um **contrato de implementação**, não um moodboard. Ele é escrito
-> para ser lido por agentes de IA (Claude Code, Copilot, Cursor) antes de qualquer
-> alteração de UI, e por humanos revisando o que o agente produziu.
+> An **implementation contract for UI and UX**, not a moodboard. Written to be
+> read by AI agents (Claude Code, Copilot, Cursor) before any interface change,
+> and by humans reviewing what the agent produced.
 >
-> **v2** — a linguagem visual agora descende da identidade do Apache Airflow.
-> Ver `DECISIONS.md` (D11–D18) para o que foi substituído e por quê.
+> **Scope: what a screen looks like and how it behaves.** Colour, type, spacing,
+> components, layout, motion, UI copy, accessibility.
+>
+> **Out of scope: what the product is, who it serves, and why it exists.** That
+> lives in `README.md`, with the working version for agents in `CLAUDE.md`. If
+> this document and those disagree about the product, those win — a design system
+> that also defines the business ends up being edited to win arguments about the
+> business.
+>
+> **v2** — the visual language now descends from the Apache Airflow identity.
+> See `DECISIONS.md` (D11–D18) for what was superseded and why.
+>
+> The document is in English, like the rest of the repository. Product copy in
+> the examples stays in Portuguese, because that is what it is: product copy.
 
 ---
 
-## 0. Como usar este documento (leia primeiro)
+## 0. How to use this document (read first)
 
-**Ordem de leitura obrigatória antes de escrever qualquer componente:**
+**Required reading order before writing any component:**
 
-1. `CLAUDE.md`, na raiz — as regras curtas e o checklist
-2. este arquivo, seção do componente que você vai tocar
-3. `docs/design-system/tokens.css` — nomes exatos das variáveis
+1. `README.md` — what the product is and who it is for. Read once; it is the
+   context every rule below assumes
+2. `CLAUDE.md`, at the root — the short rules and the checklist
+3. this file, the section for the component you are about to touch
+4. `docs/design-system/tokens.css` — the exact variable names
 
-**Se o componente que você precisa não existe aqui:** não invente estilo. Componha a
-partir dos primitivos, ou pare e proponha a adição neste documento primeiro. Um
-componente novo só entra no código depois de entrar aqui.
+**If the component you need is not here:** do not invent a style. Compose it from
+the primitives, or stop and propose the addition to this document first. A new
+component only enters the code after it enters this file.
 
-**Se este documento conflitar com o código:** este documento vence.
+**If this document conflicts with the code:** this document wins.
+
+**If a question is not about the interface, this is the wrong document.** Scope,
+audience, roadmap, what a lesson should teach, whether a feature belongs — none
+of that is decided here. Asking a design system to settle a product question is
+how design systems acquire opinions nobody signed off on.
 
 ---
 
-## 1. O que estamos construindo
+## 1. The design test
 
-| | |
+What Glider is, who it serves and what each lesson has to achieve are defined in
+`README.md`. Three facts from there constrain every rule in this document, and
+they are repeated here only as constraints, not as definitions:
+
+| From the product | What it forces on the design |
 |---|---|
-| **Produto** | Laboratórios interativos de orquestração de dados, rodando inteiros no navegador |
-| **Público** | Analistas e engenheiros de dados que já escrevem SQL/Python e vão aprender agendamento, dependências, retries e backfill |
-| **Trabalho de cada tela** | Fazer a pessoa executar um DAG e entender o que aconteceu — não ler sobre isso |
-| **Tom** | Instrutor de voo: direto, técnico, sem entusiasmo forçado, sem emoji |
-| **Restrição** | Sem backend. Tudo estático + WASM. O design nunca assume estado de servidor |
+| Transfer is the goal | Where Airflow has a convention, inherit it |
+| No backend, static + WASM | The design never assumes server state or a round trip |
+| Copy is pt-BR, in locale files | No string is ever authored inside a component (§9) |
 
-**O princípio que rege a v2 — transferência.** Quem termina o Glider e abre um Airflow
-real precisa reconhecer a tela no primeiro segundo. Cada decisão visual é avaliada por
-uma pergunta só: *isso aproxima ou afasta do Airflow de verdade?* Onde o Airflow tem
-convenção, herdamos. Onde ele tem problema conhecido (contraste, estado só por cor),
-corrigimos mantendo a identidade de matiz.
+**The test, applied to every visual decision:** *does this move closer to real
+Airflow, or further away?*
 
-**A metáfora do planador vive no vocabulário**, não na pintura: nome, tom, títulos das
-trilhas. Nenhuma ilustração de planador na UI.
+That is the whole of it. Where Airflow has a convention, we inherit it. Where it
+has a known problem — contrast, state by colour alone — we fix it while keeping
+the hue identity, because recognition survives a value change and does not
+survive a hue change.
+
+The test is deliberately narrow. It settles "should this cell be a square or a
+dot" and it does not settle "should this lesson exist" — the second is a product
+question, and answering it here would make the design system an authority on
+something it was never reviewed for.
+
+**The glider metaphor lives in the vocabulary**, not in the paint: the name, the
+tone, the track titles. No glider illustration in the UI. This one is a design
+rule, and it is here because it is enforceable here.
 
 ---
 
-## 2. Linhagem visual
+## 2. Visual lineage
 
-Três âncoras verificadas na fonte:
+Three anchors, verified against the source:
 
-1. **Azul de marca `#017CEE`** — a cor do Apache Airflow, cujo símbolo é um cata-vento
-   estilizado que sugere movimento e agendamento cíclico.
-2. **`airflow.utils.state.state_color`** — o mapa canônico de estado para cor, em cores
-   nomeadas de CSS (`green`, `lime`, `gold`, `hotpink`, `turquoise`, `mediumpurple`…).
-3. **A UI do Airflow 3** — React + Chakra, temável por tokens de cor `brand` e `gray`.
-   Nossa estrutura de tokens espelha essa forma de propósito.
+1. **Brand blue `#017CEE`** — the Apache Airflow colour, whose symbol is a
+   stylised pinwheel suggesting motion and cyclical scheduling.
+2. **`airflow.utils.state.state_color`** — the canonical state-to-colour map, in
+   CSS named colours (`green`, `lime`, `gold`, `hotpink`, `turquoise`,
+   `mediumpurple`…).
+3. **The Airflow 3 UI** — React + Chakra, themeable through `brand` and `gray`
+   colour tokens. Our token structure mirrors that shape on purpose.
 
-### A assinatura: a grade
+### The signature: the grid
 
-O elemento pelo qual o Glider é lembrado é o **grid** — quadrados coloridos por estado,
-linha = task, coluna = run. É o visual mais reconhecível do Airflow, e aqui ele é o mesmo
-objeto em três escalas:
+The element Glider is remembered by is the **grid** — squares coloured by state,
+row = task, column = run. It is Airflow's most recognisable visual, and here it
+is the same object at three scales:
 
-- **Home:** uma linha de 15 células = a trilha inteira, mostrando onde você parou
-- **Índice da trilha:** linhas = lições, colunas = suas tentativas
-- **Dentro do lab:** o grid de verdade do DAG run que você acabou de disparar
+- **Home:** a row of 15 cells = the whole track, showing where you stopped
+- **Track index:** rows = lessons, columns = your attempts
+- **Inside the lab:** the real grid of the DAG run you just triggered
 
 ```
           run 1  run 2  run 3          ■ success    ▢ queued
@@ -76,42 +105,43 @@ somar      ■      ▢      ▢
 publicar   ⁄      ▢      ▢
 ```
 
-O progresso na trilha **é** uma coluna desse grid. Não existe barra de porcentagem em
-lugar nenhum do produto.
+Track progress **is** a column of that grid. There is no percentage bar anywhere
+in the product.
 
-O único movimento ambiente é o **pulso do estado `running`**. O cata-vento da marca gira
-devagar apenas no hero, uma vez, na carga da página.
+The only ambient motion is the **`running` state pulse**. The brand pinwheel
+turns slowly in the hero only, once, on page load.
 
 ---
 
-## 3. Cor
+## 3. Colour
 
-Use **sempre** o papel semântico (`--gl-text`, `--gl-surface`). As rampas
-(`--gl-brand-*`, `--gl-gray-*`) existem para os papéis referenciarem e **não** devem
-aparecer direto num componente.
+**Always** use the semantic role (`--gl-text`, `--gl-surface`). The ramps
+(`--gl-brand-*`, `--gl-gray-*`) exist for the roles to reference and must **not**
+appear directly in a component.
 
-Tema **claro é o padrão** (como na UI do Airflow); escuro é primeira classe, não segunda.
+**Light is the default** theme (as in the Airflow UI); dark is first class, not
+second.
 
-| Papel | Token | Claro | Escuro |
+| Role | Token | Light | Dark |
 |---|---|---|---|
-| Fundo | `--gl-bg` | `#F7F9FB` | `#10161F` |
-| Superfície | `--gl-surface` | `#FFFFFF` | `#1B2431` |
-| Superfície elevada | `--gl-surface-raised` | `#EDF1F5` | `#2A3646` |
-| Borda | `--gl-border` | `#DCE3EB` | `#2A3646` |
-| Texto | `--gl-text` | `#1B2431` | `#EDF1F5` |
-| Texto secundário | `--gl-text-muted` | `#55677E` | `#9AA8B8` |
-| Acento | `--gl-accent` | `#017CEE` | `#1A8CF1` |
+| Background | `--gl-bg` | `#F7F9FB` | `#10161F` |
+| Surface | `--gl-surface` | `#FFFFFF` | `#1B2431` |
+| Raised surface | `--gl-surface-raised` | `#EDF1F5` | `#2A3646` |
+| Border | `--gl-border` | `#DCE3EB` | `#2A3646` |
+| Text | `--gl-text` | `#1B2431` | `#EDF1F5` |
+| Secondary text | `--gl-text-muted` | `#55677E` | `#9AA8B8` |
+| Accent | `--gl-accent` | `#017CEE` | `#1A8CF1` |
 
-### Estados de task
+### Task states
 
-Herdados do Airflow por **matiz**, retunados por **valor** para passar em contraste.
-A tabela é a fonte; não improvise um estado novo.
+Inherited from Airflow by **hue**, retuned by **value** to pass contrast. This
+table is the source; do not improvise a new state.
 
-| Estado | Airflow | `--gl-state-*` | Glifo |
+| State | Airflow | `--gl-state-*` | Glyph |
 |---|---|---|---|
-| `success` | green | `success` | quadrado cheio com ✓ |
-| `running` | lime | `running` | anel pulsando |
-| `queued` | gray | `queued` | quadrado vazado |
+| `success` | green | `success` | filled square with ✓ |
+| `running` | lime | `running` | pulsing ring |
+| `queued` | gray | `queued` | outlined square |
 | `up_for_retry` | gold | `up-for-retry` | ↻ |
 | `upstream_failed` | orange | `upstream-failed` | ↑ |
 | `failed` | red | `failed` | ✕ |
@@ -121,121 +151,138 @@ A tabela é a fonte; não improvise um estado novo.
 | `deferred` | mediumpurple | `deferred` | ⏸ |
 | `restarting` | violet | `restarting` | ↺ |
 | `removed` | lightgrey | `removed` | ▨ |
-| `none` | lightblue | `none` | vazio |
+| `none` | lightblue | `none` | empty |
 
-**Três regras bloqueantes em review:**
+**Three rules that block a review:**
 
-1. **O azul de marca nunca é cor de estado.** Azul num quadrado do grid é bug. `--gl-accent`
-   serve à ação primária e à navegação, e a nada mais.
-2. **Estado = cor + glifo + texto acessível.** `lime` e `green` (running e success) são
-   quase indistinguíveis para daltônicos — é a queixa histórica da UI do Airflow, e é
-   exatamente por isso que o glifo não é opcional aqui.
-3. **Nenhum estado inventado.** Se não está em `airflow.utils.state`, não existe no Glider.
+1. **Brand blue is never a state colour.** Blue in a grid square is a bug.
+   `--gl-accent` serves the primary action and navigation, and nothing else.
+2. **State = colour + glyph + accessible text.** `lime` and `green` (running and
+   success) are nearly indistinguishable to colour-blind readers — it is the
+   historical complaint about Airflow's UI, and exactly why the glyph is not
+   optional here.
+3. **No invented states.** If it is not in `airflow.utils.state`, it does not
+   exist in Glider.
 
-### Contraste
+### Contrast
 
-Mínimo 4.5:1 para texto, 3:1 para bordas e glifos que carregam informação. Toda cor de
-estado foi tunada para passar sobre `--gl-surface` no seu tema.
+Minimum 4.5:1 for text, 3:1 for borders and glyphs that carry information. Every
+state colour was tuned to pass over `--gl-surface` in its own theme.
 
 ---
 
-## 4. Tipografia
+## 4. Typography
 
-| Papel | Família | Onde |
+| Role | Family | Where |
 |---|---|---|
-| Display | **Familjen Grotesk** | h1, h2, números grandes |
-| Corpo | **Inter** | parágrafos, UI, botões |
-| Utilitária | **JetBrains Mono** | código, cron, durações, IDs de task, etiquetas |
+| Display | **Familjen Grotesk** | h1, h2, large numbers |
+| Body | **Inter** | paragraphs, UI, buttons |
+| Utility | **JetBrains Mono** | code, cron, durations, task IDs, labels |
 
-Inter é escolha de **transferência**, não de preguiça: é a fonte da UI do Airflow, e a
-familiaridade é o produto. A personalidade fica por conta do display, que é geométrico e
-levemente idiossincrático — o suficiente para o Glider não parecer um fork do Airflow.
+Inter is a **transfer** choice, not a lazy one: it is the Airflow UI's font, and
+the familiarity is the product. Personality comes from the display face, which is
+geometric and mildly idiosyncratic — just enough that Glider does not read as a
+fork of Airflow.
 
-**Escala** — `--gl-text-2xs` … `--gl-text-4xl` (11 → 72px). `4xl` só no hero da home.
+Fonts are **self-hosted** — a constraint the platform imposes on the design, not
+a preference. The reason (cross-origin isolation, and what it buys the lab) is in
+`CONTRIBUTING.md`. What it means here: never reference a font from a CDN, and
+give every face a real fallback stack.
 
-**Etiquetas:** mono, `--gl-text-2xs`, caixa alta, `--gl-tracking-label`, `--gl-text-muted`.
-Devem carregar informação real: `LIÇÃO 04 · 12 MIN`, `SCHEDULE @daily`.
+**Scale** — `--gl-text-2xs` … `--gl-text-4xl` (11 → 72px). `4xl` in the home hero
+only.
 
-**Números:** `font-variant-numeric: tabular-nums` obrigatório em qualquer número em lista,
-tabela, grid ou instrumento.
+**Labels:** mono, `--gl-text-2xs`, uppercase, `--gl-tracking-label`,
+`--gl-text-muted`. They must carry real information: `LIÇÃO 04 · 12 MIN`,
+`SCHEDULE @daily`.
+
+**Numbers:** `font-variant-numeric: tabular-nums`, required on any number in a
+list, table, grid or instrument.
 
 ---
 
-## 5. Componentes
+## 5. Components
 
-Contrato fixo. Agentes implementam o contrato; não adicionam `variant` novo sem
-atualizar este documento.
+A fixed contract. Agents implement the contract; they do not add a new `variant`
+without updating this document.
 
 ### 5.1 `Button`
 
-| Variante | Uso | Aparência |
+| Variant | Use | Appearance |
 |---|---|---|
-| `primary` | Uma por tela. A ação que executa algo | fundo `--gl-accent`, texto `--gl-on-accent`, raio `--gl-radius-ui` |
-| `secondary` | Ações de apoio | fundo `--gl-surface`, borda `--gl-border-strong` |
-| `ghost` | Barra de ferramentas | sem borda, hover `--gl-surface-raised` |
-| `danger` | Só reset destrutivo do lab | borda e texto `--gl-state-failed` |
+| `primary` | One per screen. The action that runs something | `--gl-accent` background, `--gl-on-accent` text, `--gl-radius-ui` radius |
+| `secondary` | Supporting actions | `--gl-surface` background, `--gl-border-strong` border |
+| `ghost` | Toolbar | no border, `--gl-surface-raised` on hover |
+| `danger` | Destructive lab reset only | `--gl-state-failed` border and text |
 
-Altura 32px (`sm`) ou 40px (`md`). Label em sentence case, verbo ativo, e o mesmo verbo do
-resultado: `Disparar DAG` → toast `DAG disparado`.
+Height 32px (`sm`) or 40px (`md`). Label in sentence case, active verb, and the
+same verb as the result: `Disparar DAG` → toast `DAG disparado`.
 
 ### 5.2 `StateCell`
 
-O quadrado do grid. `--gl-cell-size`, raio `--gl-cell-radius`, preenchido com a cor do
-estado e com o glifo dentro a partir de 12px. Abaixo disso o glifo some e o `title` +
-`aria-label` carregam o estado por extenso.
+The grid square. `--gl-cell-size`, `--gl-cell-radius` radius, filled with the
+state colour and carrying the glyph from 12px upward. Below that the glyph
+disappears and `title` + `aria-label` carry the state spelled out.
 
-`running` recebe um anel que pulsa em `--gl-dur-pulse`. Nenhum outro estado anima.
+`running` gets a ring pulsing at `--gl-dur-pulse`. No other state animates.
 
 ### 5.3 `StateChip`
 
-Legenda e rótulo textual. Cor + glifo + texto, os três. Mono, `--gl-text-2xs`, caixa alta,
-raio `--gl-radius-ui`, fundo transparente com borda na cor do estado.
+Legend and textual label. Colour + glyph + text, all three. Mono,
+`--gl-text-2xs`, uppercase, `--gl-radius-ui` radius, transparent background with
+a border in the state colour.
 
 ### 5.4 `GridView`
 
-A assinatura. Linhas = tasks, colunas = runs, mais recente à direita. Cabeçalho de coluna
-em mono com a data lógica. Hover em qualquer célula destaca a linha e a coluna inteiras.
+The signature. Rows = tasks, columns = runs, most recent on the right. Column
+header in mono with the logical date. Hovering any cell highlights the whole row
+and the whole column.
 
-Requisitos não negociáveis:
-- é uma `<table>` semântica, não um mar de `<div>`
-- cada célula é focável, com `aria-label` no formato `limpar · run 2026-08-22 · falhou`
-- existe alternância para lista textual; o grid nunca é a única forma de ler o estado
+Non-negotiable requirements:
+- it is a semantic `<table>`, not a sea of `<div>`s
+- every cell is focusable, with an `aria-label` in the form
+  `limpar · run 2026-08-22 · falhou`
+- a text-list alternative exists; the grid is never the only way to read state
 
 ### 5.5 `GraphView`
 
-Nós retangulares, raio `--gl-radius-node`, **borda** na cor do estado (é assim que o
-Airflow faz — borda, não preenchimento), fundo `--gl-surface`. Arestas em
-`--gl-border-strong`, sólidas.
+Rectangular nodes, `--gl-radius-node` radius, **border** in the state colour
+(this is how Airflow does it — border, not fill), `--gl-surface` background.
+Edges in `--gl-border-strong`, solid.
 
-- navegável por teclado (setas entre nós, Enter abre detalhe)
-- cada nó é um `<button>` com `aria-label` incluindo id da task e estado por extenso
+- keyboard navigable (arrows between nodes, Enter opens the detail)
+- each node is a `<button>` with an `aria-label` including the task id and the
+  state spelled out
 
-### 5.6 `TrackGrid` (progresso)
+### 5.6 `TrackGrid` (progress)
 
-Progresso na trilha é uma **coluna do grid**: 15 células, uma por lição, coloridas pelo
-seu estado (`success`, `running`, `queued`). Não existe barra de porcentagem.
+Track progress is a **grid column**: 15 cells, one per lesson, coloured by their
+state (`success`, `running`, `queued`). There is no percentage bar.
 
-Fallback: `role="progressbar"` com `aria-valuenow/min/max` e texto `Lição 4 de 15`.
+Fallback: `role="progressbar"` with `aria-valuenow/min/max` and the text
+`Lição 4 de 15`.
 
 ### 5.7 `CodePane`
 
-Monaco. Tema derivado dos tokens — **não usar `vs`/`vs-dark` de fábrica**. Fundo
-`--gl-surface`, gutter `--gl-text-muted`, seleção `--gl-accent-quiet`.
+Monaco. Theme derived from the tokens — **do not use the stock `vs`/`vs-dark`**.
+`--gl-surface` background, `--gl-text-muted` gutter, `--gl-accent-quiet`
+selection.
 
 ### 5.8 `RunLog`
 
-Saída do scheduler. Mono, `--gl-text-sm`, `--gl-leading-snug`. Timestamps em
-`--gl-text-muted`, nível de log colorido pelos tokens de estado. Rola sozinho apenas
-enquanto o usuário está no fim do buffer.
+Scheduler output. Mono, `--gl-text-sm`, `--gl-leading-snug`. Timestamps in
+`--gl-text-muted`, log level coloured by the state tokens. Auto-scrolls only
+while the user is at the end of the buffer.
 
 ### 5.9 `Callout`
 
-Três tipos, e só três: `note`, `warning`, `checkpoint`. Borda esquerda 3px na cor do tipo,
-`border-radius: 0`, sem fundo colorido, sem emoji.
+Three kinds, and only three: `note`, `warning`, `checkpoint`. 3px left border in
+the kind's colour, `border-radius: 0`, no coloured background, no emoji.
 
-### 5.10 Estados vazios e de erro
+### 5.10 Empty and error states
 
-Tela vazia é convite à ação. Erro diz o que quebrou e o que fazer, na voz da interface.
+An empty screen is an invitation to act. An error says what broke and what to do,
+in the interface's voice.
 
 - ✅ `Nenhum DAG encontrado. Verifique se o arquivo está em dags/ e dispare de novo.`
 - ❌ `Ops! Algo deu errado 😕`
@@ -244,121 +291,162 @@ Tela vazia é convite à ação. Erro diz o que quebrou e o que fazer, na voz da
 
 ## 6. Layout
 
-- Container `--gl-max-width` (1200px), gutter `--gl-gutter`
-- Texto corrido limitado a `--gl-prose-width` (68ch)
-- O lab usa 3 painéis redimensionáveis; o conteúdo usa grid de 12 colunas
+- `--gl-max-width` container (1200px), `--gl-gutter` gutter
+- Running text capped at `--gl-prose-width` (68ch)
+- The lab uses 3 resizable panels; content uses a 12-column grid
 - Breakpoints: `640` / `900` / `1200`
-- **Abaixo de 900px o lab vira leitura + execução, sem canvas editável.** Decisão tomada
-  (D9), não reabra.
+- **Below 900px the lab becomes read + run, with no editable canvas.** Decided
+  (D9), do not reopen.
 
 ---
 
-## 7. Movimento
+## 7. Motion
 
-| Situação | Duração | Easing |
+| Situation | Duration | Easing |
 |---|---|---|
-| Hover, foco | `--gl-dur-1` | `--gl-ease-out` |
-| Entrada de painel, popover | `--gl-dur-2` | `--gl-ease-snap` |
-| Transição de lição | `--gl-dur-3` | `--gl-ease-snap` |
-| Pulso do estado `running` | `--gl-dur-pulse` | `ease-in-out`, infinito |
-| Giro do cata-vento no hero | `--gl-dur-spin` | `linear`, **uma volta só** |
+| Hover, focus | `--gl-dur-1` | `--gl-ease-out` |
+| Panel entrance, popover | `--gl-dur-2` | `--gl-ease-snap` |
+| Lesson transition | `--gl-dur-3` | `--gl-ease-snap` |
+| `running` state pulse | `--gl-dur-pulse` | `ease-in-out`, infinite |
+| Hero pinwheel turn | `--gl-dur-spin` | `linear`, **one turn only** |
 
-Nada mais anima. Sem parallax, sem reveal no scroll, sem contador subindo.
-`prefers-reduced-motion` zera as durações via tokens — não escreva media query própria.
+Nothing else animates. No parallax, no scroll reveal, no counting up.
+`prefers-reduced-motion` zeroes the durations through the tokens — do not write
+your own media query.
 
 ---
 
-## 8. Regras para agentes de IA
+## 8. Rules for AI agents
 
-**Proibido**
-1. Hex, `rgb()`, `hsl()` literal em qualquer arquivo que não seja `tokens.css`
-2. Classe utilitária de cor arbitrária (`bg-[#017CEE]`, `text-slate-400`)
-3. Espaçamento fora da escala (`padding: 13px`)
-4. `box-shadow` fora dos três tokens (`card`, `pop`, `ring-focus`)
-5. `border-radius` acima de 8px fora de `--gl-radius-pill`
-6. Azul de marca usado como cor de estado
-7. Estado de task que não exista em `airflow.utils.state`
-8. Biblioteca de componentes nova sem decisão registrada
-9. Emoji em UI de produto; gradiente em fundo ou botão
-10. Estado comunicado só por cor
-11. Barra de progresso percentual em qualquer lugar
-12. Reprodução do logo do Apache Airflow ou de derivado próximo dele (ver §11)
+**Forbidden**
+1. Literal hex, `rgb()` or `hsl()` in any file other than `tokens.css`
+2. Arbitrary colour utility classes (`bg-[#017CEE]`, `text-slate-400`)
+3. Spacing outside the scale (`padding: 13px`)
+4. `box-shadow` outside the three tokens (`card`, `pop`, `ring-focus`)
+5. `border-radius` above 8px outside `--gl-radius-pill`
+6. Brand blue used as a state colour
+7. A task state that does not exist in `airflow.utils.state`
+8. A new component library without a recorded decision
+9. Emoji in product UI; gradients in a background or a button
+10. State communicated by colour alone
+11. A percentage progress bar anywhere
+12. Reproducing the Apache Airflow logo or a close derivative of it (see §11)
+13. UI copy written inline instead of in a locale file (see §9)
 
-**Obrigatório**
-1. Todo componente novo entra neste documento **antes** do código
-2. Todo número em lista, grid ou instrumento usa mono + `tabular-nums`
-3. Todo controle interativo tem foco visível herdado de `:focus-visible`
-4. Toda célula de estado tem glifo e `aria-label` com o estado por extenso
-5. Toda decisão que contrarie este documento vira uma linha em `DECISIONS.md`
+**Required**
+1. Every new component enters this document **before** the code
+2. Every number in a list, grid or instrument uses mono + `tabular-nums`
+3. Every interactive control has visible focus inherited from `:focus-visible`
+4. Every state cell has a glyph and an `aria-label` with the state spelled out
+5. Every decision that contradicts this document becomes a row in `DECISIONS.md`
 
-**Antes de abrir PR:**
+**Before opening a PR:**
 
 ```
 /ds-check
 ```
 
-Roda os quatro checks — cor literal fora dos tokens, `box-shadow` fora dos tokens, raio
-acima de 8px, azul de marca como estado — em todo arquivo de fonte, mais a paridade
-`tokens.css` ↔ `tokens.json` desta seção §12. Precisa passar.
+Runs the four checks — literal colour outside the tokens, `box-shadow` outside
+the tokens, radius above 8px, brand blue as a state — across every source file,
+plus the `tokens.css` ↔ `tokens.json` parity of §12 and the locale parity of §9.
+It has to pass.
 
-A implementação é uma só, em `.claude/hooks/ds-rules.sh`, e um hook a aplica a cada arquivo
-salvo. Os padrões cobrem também a grafia camelCase do JSX (`boxShadow`, `borderRadius`), que
-a versão anterior deste bloco deixava passar.
+The patterns cover the camelCase spelling used in JSX (`boxShadow`,
+`borderRadius`), which an earlier version of this block let through.
 
----
-
-## 9. Escrita
-
-- Sentence case em títulos, botões e labels
-- Verbo ativo dizendo o que acontece: `Disparar DAG`, não `Executar`
-- O nome da ação é o mesmo do começo ao fim do fluxo
-- **Use o vocabulário do Airflow, não sinônimos.** `task`, `DAG run`, `data logica`,
-  `upstream`, `backfill`, `up_for_retry`. Traduzir esses termos afasta da transferência,
-  que é o ponto do produto. Explicar na primeira aparição, sim; substituir, não
-- Sem `simplesmente`, `apenas`, `é só`. Sem exclamação, sem emoji
-- PT-BR e EN em paridade; texto de UI em arquivos de locale, nunca inline
+How those checks are wired — one implementation, three callers, and what happens
+on a pull request — is in `docs/pipeline.md`. It is not repeated here: this
+document says what the rules are, the pipeline document says how they are
+enforced, and a rule that drifts from its enforcement is easier to spot when the
+two are not interleaved.
 
 ---
 
-## 10. Piso de qualidade
+## 9. Writing
 
-- [ ] Responsivo até 360px
-- [ ] Navegação completa por teclado, com foco visível
-- [ ] `prefers-reduced-motion` respeitado
-- [ ] Contraste 4.5:1 em texto, 3:1 em glifos e bordas informativas
-- [ ] Estado nunca comunicado só por cor
-- [ ] Tema claro e escuro verificados na mesma tela
-- [ ] Grid legível em simulação de deuteranopia e protanopia
-- [ ] Sem CLS: grid e canvas reservam altura antes de montar
-- [ ] Fontes com `font-display: swap` e fallback de sistema
+- Sentence case in headings, buttons and labels
+- An active verb that says what happens: `Disparar DAG`, not `Executar`
+- The action keeps the same name from the start of the flow to the end
+- **Use Airflow vocabulary, not synonyms.** `task`, `DAG run`, `data lógica`,
+  `upstream`, `backfill`, `up_for_retry`. Translating those works against
+  transfer, which is the point of the product. Explain on first appearance, yes;
+  replace, no
+- No `simplesmente`, `apenas`, `é só`. No exclamation marks, no emoji
+- **All UI copy lives in `src/locales/<locale>/*.json`, never inline.** `pt-BR` is
+  the source locale
 
----
+That last rule is the only part of the language policy this document owns, and it
+is here because it is a component-level constraint: a string typed into a `.tsx`
+is a design defect the same way a raw hex is, and the reviewer catches it in the
+same pass.
 
-## 11. Marca e uso do nome Airflow
-
-Apache Airflow é marca da Apache Software Foundation. O Glider **não é** um projeto da
-ASF e não pode sugerir endosso.
-
-- Não use o logo do Airflow nem um cata-vento próximo o bastante para confundir. A marca
-  do Glider é própria; o parentesco visual está na paleta e na estrutura, não no símbolo
-- Descreva como "laboratórios para aprender Apache Airflow", nunca "Airflow Labs oficial"
-- Inclua no rodapé: *Apache Airflow é marca registrada da Apache Software Foundation.
-  Este projeto não é afiliado à ASF.*
-- Herdar cores de estado de um projeto Apache-2.0 é uso legítimo; reproduzir identidade
-  de marca é outra coisa. Antes de qualquer uso comercial, leia a política de marcas da ASF
+Which locales exist, when English is added, and how parity is enforced are
+product and engineering decisions. They live in `README.md` and `CONTRIBUTING.md`.
 
 ---
 
-## 12. Arquivos
+## 10. Quality floor
+
+- [ ] Responsive down to 360px
+- [ ] Full keyboard navigation, with visible focus
+- [ ] `prefers-reduced-motion` respected
+- [ ] Contrast 4.5:1 for text, 3:1 for glyphs and informative borders
+- [ ] State never communicated by colour alone
+- [ ] Light and dark themes checked on the same screen
+- [ ] Grid readable under deuteranopia and protanopia simulation
+- [ ] No CLS: grid and canvas reserve height before mounting
+- [ ] Fonts with `font-display: swap` and a system fallback
+
+This floor is human. No script checks it, and no agent should claim it is met —
+it belongs to whoever merges the PR.
+
+---
+
+## 11. What the interface may not draw
+
+The trademark position — that Apache Airflow is an ASF trademark, that Glider is
+not an ASF project, and what that means commercially — is stated in `README.md`
+and `LICENSE-CONTENT`. This section is only the part a reviewer can check by
+looking at a diff:
+
+- **Do not draw the Airflow logo,** or a pinwheel close enough to be confused
+  with it. Glider's mark is its own; the visual kinship is in the palette and the
+  structure, not in the symbol
+- **The footer carries the trademark notice**, from the locale files like every
+  other string. Its wording is set in `README.md`, not here — one place, so a
+  legal line is never edited as a design tweak
+- **Copy never claims endorsement.** "labs for learning Apache Airflow", never
+  "official Airflow Labs"
+
+Inheriting state colours from an Apache-2.0 project is legitimate; reproducing
+brand identity is not. That distinction is why §3 inherits hues and §11 forbids
+the symbol — the same boundary, seen from two sides.
+
+---
+
+## 12. The files this document governs
 
 ```
-CLAUDE.md               ← na RAIZ. Contrato curto, carregado em toda sessão
 docs/design-system/
-├─ DESIGN-SYSTEM.md   ← este arquivo, a fonte narrativa
-├─ tokens.css         ← fonte única de verdade dos valores
-├─ tokens.json        ← mesmos valores para Tailwind/Style Dictionary
-└─ DECISIONS.md       ← registro de exceções e mudanças de rumo
+├─ DESIGN-SYSTEM.md  ← this file, the narrative source for UI and UX
+├─ tokens.css        ← single source of truth for the values
+├─ tokens.json       ← the same values for Tailwind/Style Dictionary
+└─ DECISIONS.md      ← design exceptions and changes of direction
 ```
 
-`tokens.css` e `tokens.json` precisam ser gerados da mesma origem ou verificados em CI.
-Se divergirem, `tokens.css` vence.
+Four files, and their authority stops at the interface. `DECISIONS.md` records
+design decisions only: a row there settles what a component looks like, never
+what the product does.
+
+For anything outside that boundary: `README.md` for the product, `CLAUDE.md` for
+the working contract agents load each session, `CONTRIBUTING.md` for the
+issue-to-production flow, `docs/pipeline.md` for CI, deploy and the board.
+
+`tokens.css` and `tokens.json` have to be generated from the same origin or
+verified in CI. If they diverge, `tokens.css` wins.
+
+`.claude/hooks/tokens-parity.sh` performs that check, on every save and in the
+`contract` job. It compares the **set of hex colours**, deliberately not the
+numeric values: there are legitimate asymmetries (0ms exists only in the css,
+inside the `prefers-reduced-motion` block; the 640px/900px breakpoints exist only
+in the json), and a check that flagged those would be abandoned in its first week.

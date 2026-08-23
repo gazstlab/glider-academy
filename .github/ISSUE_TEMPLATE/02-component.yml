@@ -1,0 +1,82 @@
+name: UI component
+description: A new component, a new variant, or a new prop
+title: "[component] "
+labels: ["type/component", "area/design-system"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Rule 12 · a new component enters `DESIGN-SYSTEM.md` before the code.**
+        It is the most common violation and the most expensive one, because it
+        is the one that rots the system. That is why the section field below is
+        required: if the section does not exist yet, this issue is for writing
+        it, and the implementation comes in another one.
+
+  - type: input
+    id: name
+    attributes:
+      label: Component name
+      placeholder: StateChip
+    validations:
+      required: true
+
+  - type: dropdown
+    id: kind
+    attributes:
+      label: What this is
+      options:
+        - New component, not documented yet
+        - New component, section already written in DESIGN-SYSTEM.md
+        - New variant or prop of an existing component
+    validations:
+      required: true
+
+  - type: input
+    id: section
+    attributes:
+      label: Section in DESIGN-SYSTEM.md
+      description: >
+        Where it is documented, or where it will go. If it does not exist yet,
+        write "to be written" — and then this issue cannot produce code.
+      placeholder: "§5.3 StateChip"
+    validations:
+      required: true
+
+  - type: textarea
+    id: job
+    attributes:
+      label: What job this component does
+      description: One sentence. If it takes a paragraph, it is probably two components.
+    validations:
+      required: true
+
+  - type: textarea
+    id: states
+    attributes:
+      label: States it displays
+      description: >
+        Only what exists in `airflow.utils.state`. An invented state teaches
+        something false, the worst defect this product can have (D18). Leave
+        empty if the component displays no state.
+      placeholder: queued, running, success, failed, up_for_retry, skipped, upstream_failed
+
+  - type: textarea
+    id: tokens
+    attributes:
+      label: Tokens it uses
+      description: "`--gl-*` names only. Raw values are legal in `tokens.css` and nowhere else."
+      placeholder: --gl-state-running, --gl-space-2, --gl-radius-card, --gl-shadow-card
+
+  - type: checkboxes
+    id: floor
+    attributes:
+      label: Quality floor (§10) this component has to meet
+      options:
+        - label: Readable at 360px
+        - label: Reachable and operable by keyboard, with visible focus
+        - label: State carried by colour **and** glyph **and** accessible text
+        - label: "Contrast 4.5:1 for text, 3:1 for glyphs and informative borders"
+        - label: Correct in both light and dark themes
+        - label: "Numbers in mono with `tabular-nums`"
+        - label: No CLS — reserves height before mounting
+        - label: "All copy from locale files, never inline (§9)"
