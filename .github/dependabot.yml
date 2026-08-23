@@ -17,10 +17,15 @@ updates:
 
   # Inert until package.json exists. Committed now so the product's first
   # dependency is already under watch.
+  #
+  # Monthly, not weekly, for the duration of the build-out: the moment
+  # package.json lands, five weekly pull requests each run Playwright on two
+  # browsers against a strict gate. S33 puts the interval back to weekly, and
+  # `day` is kept for that day.
   - package-ecosystem: npm
     directory: /
     schedule:
-      interval: weekly
+      interval: monthly
       day: monday
     open-pull-requests-limit: 5
     commit-message:
