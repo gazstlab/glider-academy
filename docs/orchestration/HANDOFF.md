@@ -11,6 +11,7 @@ Read this before starting a spec. Rewrite it before finishing one.
 ---
 
 **Last audited spec:** S00 — the issue form the queue needs before it can start
+**Verdict:** REPAIR, then PASS on re-audit. Merged in #3
 **Date:** 2026-08-23
 
 ## What exists
@@ -30,9 +31,15 @@ CI knows this: `preflight` sets `app=false` when `package.json` is missing, and
 every application job skips itself. The `gate` job is green on an empty repository
 by design.
 
-`main` carries the full pipeline — PR #1 merged, and PR #2 added
-`docs/orchestration.md`, this file and the 34 specs. Branch the queue from
-`main`.
+`main` carries everything: the pipeline (PR #1), the orchestration and the 34
+specs (PR #2), and the `06-feature` form with `type/feature` (PR #3, S00). The
+six forms and 28 labels are live on GitHub — `labels-sync.yml` ran on the merge.
+Branch the queue from `main`.
+
+The `main` ruleset is **active**: `gate` is a required check, squash is the only
+merge method, history is linear, and `bypass_actors` is empty — it binds the
+repository owner too. Until 2026-08-23 it did not exist, and the gate was
+decorative.
 
 ## Surface
 
@@ -77,16 +84,7 @@ row in `DECISIONS.md`:
 ## Debt
 
 - **No issues exist yet.** Nothing in `docs/specs/` has been filed. Until a spec
-  has an issue number, its branch takes `00` — `docs/orchestration.md` §3. What
-  is live on GitHub is one form and one label behind this branch: `gh label list`
-  returns the 27 labels of `labels.yml` plus GitHub's 9 defaults, and
-  `origin/main` carries five forms plus `config.yml`. `06-feature.yml` and
-  `type/feature` are files on this branch and nothing more until it merges
-- **`type/feature` is declared but unsynced.** It lands on GitHub the next time
-  `labels-sync.yml` runs on a push touching `.github/labels.yml`, or on
-  `gh workflow run labels-sync.yml`. Filing a `06-feature` issue before that
-  opens it with no classification at all — `docs/pipeline.md`, activation order
-  step 3
+  has an issue number, its branch takes `00` — `docs/orchestration.md` §3
 - **The npm interval is temporary.** `dependabot.yml` carries `interval: monthly`
   and keeps `day: monday` for when **S33** puts it back to weekly. Five weekly
   dependency PRs, each running Playwright on two browsers against a strict gate,
