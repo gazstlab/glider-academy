@@ -9,6 +9,7 @@ entirely in the browser, with no backend.
 | What a screen looks like and how it behaves | `docs/design-system/DESIGN-SYSTEM.md` — UI and UX only |
 | Exact design values | `docs/design-system/tokens.css` |
 | How work moves from issue to production | `CONTRIBUTING.md`, `docs/pipeline.md` |
+| How agents execute the queue of specs | `docs/orchestration.md` |
 
 This file is the executable summary of the first two. When it is thinner than
 they are, they win — but the split above holds in both directions: do not ask the
@@ -91,6 +92,45 @@ is in palette and structure, not in the symbol. The footer always carries the AS
 trademark notice, from the locale files like every other string — its wording is
 set in `README.md`, so a legal line is never edited as a design tweak.
 
+## Orchestration
+
+Implementation runs as a queue. `docs/specs/` holds one file per spec; each is
+sized so that a single agent, holding only that spec's context, can finish it.
+**One at a time, strictly sequential.** The full protocol — prompt templates,
+the audit checklist, the spec format — is `docs/orchestration.md`.
+
+**main coordinates and does not implement.** It reads specs, spawns agents,
+audits, hands off. A coordinator that implements is carrying five specs of dead
+detail by the sixth one and starts answering from memory of what it built — the
+same failure the rule above names. Context is a budget, not a resource.
+
+**Each spec goes to one subagent, with a closed packet of six things:** the spec
+verbatim; `docs/orchestration/HANDOFF.md`; a reading list of document
+*sections*, not files; the file fence; the acceptance commands; the branch name.
+Nothing else, and never "read the repository and figure it out".
+
+**Every spec hands the next five things** — `Artifacts`, `Surface`,
+`Invariants`, `Evidence`, `Debt`. A spec that cannot fill all five was scoped
+wrong. `Surface` is checked against the diff: a symbol named there that the code
+does not export breaks the next spec on its first import. `Debt` is how work an
+agent could not do inside its fence becomes a handoff item instead of a hole.
+
+**Nothing counts until it is audited, and never by the agent that did it.**
+`spec-auditor` asks whether the spec was delivered — evidence, fence, handoff.
+`ds-reviewer` asks whether the interface obeys the contract, and is spawned as
+well whenever UI was touched. Verdicts are `PASS`, `REPAIR` (a gap in the work,
+one round back to the same agent) and `BLOCKED` (a gap in the spec, or a human
+decision — stop the queue).
+
+**What stops the queue:** two failed repair rounds; any `tokens.css` change,
+which `tokens-guard.sh` escalates by construction; an Airflow claim that could
+not be verified. A subagent never closes its own issue and never merges its own
+PR.
+
+**`docs/orchestration/HANDOFF.md`** is the state of the world — one file,
+overwritten each spec, not a log. Read it before starting; rewrite it before
+finishing.
+
 ## Before finishing a task
 
 ```
@@ -119,16 +159,19 @@ simulation.
 | `/airflow-truth` | how to check an Airflow claim against the source |
 | `/decision` | writes the row in `DECISIONS.md`, numbered and dated |
 | agent `ds-reviewer` | reads a UI diff against the contract, in a clean context. What regex misses: component outside the document, invented state, state by colour alone |
+| agent `spec-auditor` | reads a finished spec against what it promised: acceptance evidence, the file fence, the `Surface` block, the handoff. Never run by the agent that did the work |
 | `hooks/ds-selftest.sh` | proves the checks know how to reject. A new check without a case here is a check that only knows how to pass |
 
 `ds-reviewer` is also what reviews the PR: the review workflow has no prompt of
-its own, it tells the agent to read that file. One contract, one place.
+its own, it tells the agent to read that file. One contract, one place — which is
+why `spec-auditor` audits completion and leaves the design contract alone.
 
 Hooks apply on their own, on every `Edit`/`Write`: the §8 checks on the saved
 file, token parity, and escalation to the user on any change to `tokens.css`.
 
 The issue-to-production flow lives in `CONTRIBUTING.md`. How CI, deploy, the
-board and the rulesets are wired lives in `docs/pipeline.md`.
+board and the rulesets are wired lives in `docs/pipeline.md`. How the queue of
+specs is executed lives in `docs/orchestration.md`.
 
 ## If you need to break a rule
 
