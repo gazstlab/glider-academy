@@ -176,6 +176,38 @@ The issue-to-production flow lives in `CONTRIBUTING.md`. How CI, deploy, the
 board and the rulesets are wired lives in `docs/pipeline.md`. How the queue of
 specs is executed lives in `docs/orchestration.md`.
 
+## Skills from outside this repository
+
+The three skills above are the ones that apply here. Others may be installed,
+and a general design skill will match almost every UI task in the queue by
+description alone — "building new UI" is what most of these issues are.
+
+**The design system outranks any of them.** §0 already says the document wins
+when the code disagrees; it wins against outside guidance for the same reason,
+and the reason is not territorial. General design advice is written for a brief
+with open axes, and asks you to spend them: choose a distinctive palette, pair
+display and body faces nobody else would reach for, pick the one signature
+element the page is remembered by, orchestrate a page-load sequence, take an
+aesthetic risk you can justify.
+
+Every one of those axes is already closed here, and closed on purpose:
+
+| It would have you choose | Already decided, and why |
+|---|---|
+| A palette | §3 · inherited from `airflow.utils.state` by hue. Recognition survives a value change, not a hue change |
+| Typefaces | §4, D16 · Inter because it reads like the Airflow UI. A more distinctive face is a worse one |
+| A signature element | §2 · the grid of state squares. It is the product |
+| Motion | §7 · the `running` pulse and one hero turn. Nothing else animates |
+| An aesthetic risk | The risk was taken: we inherit ugly state colours and refuse to translate `up_for_retry`. Each is worse in isolation and correct in aggregate |
+
+So a skill's visual direction does not apply. What overlaps §9 — active verbs,
+an action keeping its name from button to toast, errors that say what broke and
+what to do — is welcome and already written here; take it from §9, which is the
+version that knows this product ships in pt-BR from locale files.
+
+If outside guidance ever seems right and the document wrong, that is a
+`/decision`, not a quiet exception.
+
 ## If you need to break a rule
 
 Use `/decision`. The row needs a date, what was broken, why, and which
