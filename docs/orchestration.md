@@ -433,7 +433,7 @@ constraints — but they are why every spec carries a `Files` fence.
 | `DECISIONS.md` | #7, #10, #14, #15, #18 |
 | `tokens.css` | **#15 only** — and it escalates to a human by design |
 | `index.html` | #6, #12, #16 — one block each, no restructuring |
-| `vite.config.ts` | #6 writes the blocks; #21 and #29 fill in values |
+| `vite.config.ts` | #6 writes the blocks; **#7 adds the `css.lightningcss.drafts.customMedia` line**; #21 and #29 fill in values |
 | `dependabot.yml` | #5 set npm monthly, #38 restores weekly |
 
 `package.json` and `pnpm-lock.yaml` are touched by #6 only: every dependency the

@@ -1,0 +1,54 @@
+/* =============================================================
+   Glider — layout primitives
+
+   DESIGN-SYSTEM.md §6, and nothing else. Component styles live
+   with their component; a rule that describes one thing on one
+   screen does not belong in a file every screen loads.
+
+   Every value here is a token. This file is subject to the four
+   §8 checks — tokens.css is the only file exempt from them, and
+   this one is not it.
+   ============================================================= */
+
+/* The page container: 1200px of content, gutters outside it.
+   `border-box` so the gutter is inside the cap rather than added
+   to it — otherwise the widest screen renders 1248px and §6's
+   number stops being the number. */
+.gl-container {
+  box-sizing: border-box;
+  max-width: var(--gl-max-width);
+  margin-inline: auto;
+  padding-inline: var(--gl-gutter);
+}
+
+/* Running text, capped at 68ch. Measure is a reading constraint,
+   so it caps the text and never the container it sits in. */
+.gl-prose {
+  max-width: var(--gl-prose-width);
+}
+
+/* Any number in a list, grid or instrument. §4 makes tabular
+   figures mandatory there, and §8 rule 2 makes it non-optional:
+   digits that change width make a grid twitch on every tick. */
+.gl-nums {
+  font-family: var(--gl-font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* -------------------------------------------------------------
+   Breakpoints — 640 / 900 / 1200, §6
+
+   Use them as `@media (--gl-bp-md) { ... }`. Lightning CSS
+   compiles the reference at build time; the one line in
+   vite.config.ts is what enables it, and e2e/tokens.spec.ts fails
+   if either unresolved spelling ever reaches dist/.
+
+   The same three values are in tokens.json (`layout.breakpoints`).
+   Nothing checks that the two agree: tokens.css carries no
+   breakpoints and is not editable by a product spec, so changing
+   one means changing the other by hand. Carried as debt in
+   `docs/orchestration/HANDOFF.md`.
+   ------------------------------------------------------------- */
+@custom-media --gl-bp-sm (min-width: 640px);
+@custom-media --gl-bp-md (min-width: 900px);   /* D9 — the lab's editable canvas starts here */
+@custom-media --gl-bp-lg (min-width: 1200px);
