@@ -261,6 +261,7 @@ jobs:
       - name: Deploy
         id: deploy
         run: |
+          rm -rf .vercel
           npm install --global vercel@latest
           vercel pull --yes --environment=preview --token="$VERCEL_TOKEN"
           vercel build --token="$VERCEL_TOKEN"
@@ -307,6 +308,7 @@ jobs:
       - name: Deploy
         id: deploy
         run: |
+          rm -rf .vercel
           npm install --global vercel@latest
           vercel pull --yes --environment=production --token="$VERCEL_TOKEN"
           vercel build --prod --token="$VERCEL_TOKEN"
